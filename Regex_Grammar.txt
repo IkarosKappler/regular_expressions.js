@@ -1,0 +1,73 @@
+
+
+
+NEU
+--------------------
+
+
+[abh] 		Eines der Zeichen: a,b oder h
+[12uf] 		Eines der Zeichen: 1,2,u oder f
+[^ret] 		Jedes Zeichen ist zulässig mit Ausnahme der Zeichen: r,e und t
+[a-z] 		Alle Kleinbuchstaben von a bis z
+[a-zA-F] 		Alle Kleinbuchstaben von a bis z und die Großbuchstabe von A bis F
+[^4-7] 		Keine der Zeichen 4,5,6 oder 7
+[1-6&&[567]] 		Die Zeichen 5 und 6 (Schnittmenge)
+[1-6&&[^567]] 		Die Zeichen 1, 2, 3 und 4 (Subtraktion)
+[1-3[a-c]] 		Die Zeichen 1, 2, 3, a, b und c (Vereinigung)
+
+
+REGEX := '(' REGEX ')' |
+      	 '^' REGEX |
+         CHARACTERSET |
+         REGEX '|' REGEX |
+         REGEX REGEX |
+	 REGEX QUANTIFIER
+         ATOM
+
+CHARACTERSET := '[' CSETDEF ']' |
+      	     	'[^' CSETDEF ']'
+
+CSETDEF := CRANGE |
+	    ANYCHARACTER+ CSETDEF
+
+CRANGE := ANYCHARACTER '-' ANYCHARACTER
+
+QUANTIFIER := '*' | 
+	      '+' |
+	      '{' NUMBER '}' |
+	      '{' NUMBER ',' NUMBER '}'
+
+ATOM := ANYCHARACTER |
+        '\' ESCAPECHAR |
+        ATOM ATOM
+        \uXXXX       %% unicode char
+        \xXX         %% ASCII char
+	^            %% begin of input
+	$            %% end of input
+	
+
+
+
+
+ALT
+--------------------
+
+
+REGEX := '(' REGEX ')' |
+         RANGE |
+         REGEX'|'REGEX |
+         REGEXREGEX |
+         REGEX'*' |
+         REGEX'+' |
+         ATOM
+
+RANGE := '[' ['^'] CHARACTERSET+ ']' |
+         '[' ['^'] CHARACTERSET+ '&&' RANGE ']'
+CHARACTERSET := CHAR+ | CHAR'-'CHAR
+
+
+ATOM := ANYCHARACTER |
+        '\' ESCAPECHAR |
+        ATOM ATOM
+        \uXXXX       %% unicode char
+        \xXX         %% ASCII char

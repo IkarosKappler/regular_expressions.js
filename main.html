@@ -6,19 +6,60 @@
 <script language="Javascript" type="text/javascript" src="IKRS.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.Object.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.PushbackStringReader.js"></script>
-<!--<script language="Javascript" type="text/javascript" src="IKRS.RegexToken.js"></script> -->
+<script language="Javascript" type="text/javascript" src="IKRS.StringBuffer.js"></script>
+<script language="Javascript" type="text/javascript" src="IKRS.RegexToken.js"></script>
+<script language="Javascript" type="text/javascript" src="IKRS.RegexTokenizer.js"></script>
+<script language="Javascript" type="text/javascript" src="IKRS.RegexParser.js"></script>
+
+<script language="Javascript" type="text/javascript" src="IKRS.RegexConstant.js"></script>
+<script language="Javascript" type="text/javascript" src="IKRS.RegexUnion.js"></script>
+<script language="Javascript" type="text/javascript" src="IKRS.RegexIntersection.js"></script>
+<script language="Javascript" type="text/javascript" src="IKRS.RegexKleene.js"></script>
+<script language="Javascript" type="text/javascript" src="IKRS.RegexConcatenation.js"></script>
+<script language="Javascript" type="text/javascript" src="IKRS.RegexCharacter.js"></script>
+<script language="Javascript" type="text/javascript" src="IKRS.RegexCharacterSet.js"></script>
+<script language="Javascript" type="text/javascript" src="IKRS.RegexCharacterRange.js"></script>
 
 <script language="Javascript" type="text/javascript" src="main.js"></script>
+<script language="Javascript" type="text/javascript" src="util.js"></script>
 </head>
 
 
 <body>
 
 Test
-<form name="regex_form">
-  <textarea name="input_text" id="input_text" cols="75" rows="15">A test Text. 12345; PI.</textarea><br/>
-  <button onclick="testPushbackStringReader();">Test PushbackStringReader</button>
-</form>
+<table border="0">
+  <tr>
+    <td>
+      <form name="regex_form">
+	<textarea name="input_text" id="input_text" cols="75" rows="15">[^0-9]([_a-zA-Z]|[0-9])*</textarea>
+      </form>
+    </td>
+    <td>
+      <button onclick="document.getElementById('input_text').value='abc';">Constant</button><br/>
+      <button onclick="document.getElementById('input_text').value='(abc)';">(Constant)</button><br/>
+      <button onclick="document.getElementById('input_text').value='abc|XYZ';">Constant Union</button><br/>
+      <button onclick="document.getElementById('input_text').value='abc*';">STERN(*)</button><br/>
+      <button onclick="document.getElementById('input_text').value='ab(c)*';">CONSTANT CONSTANT STERN(*)</button><br/>
+      <button onclick="document.getElementById('input_text').value='abc+';">STERN(+)</button><br/>
+      <button onclick="document.getElementById('input_text').value='abc|XYZ+';">UNION or STERN(+)</button><br/>
+      <button onclick="document.getElementById('input_text').value='(abc|XYZ)+';">UNION or STERN(+) (2)</button><br/>
+      <button onclick="document.getElementById('input_text').value='(abc)(XYZ)';">Concat</button><br/>
+      <button onclick="document.getElementById('input_text').value='[a-z]';">Range</button><br/>
+      <button onclick="document.getElementById('input_text').value='[^a-z]';">Range (negated)</button><br/>
+      <button onclick="document.getElementById('input_text').value='abcdef|[a-z]';">Constant or Range</button><br/>
+      <button onclick="document.getElementById('input_text').value='[asdf]';">Character Set</button><br/>
+      <button onclick="document.getElementById('input_text').value='[a-z&&[^m-k]]';">Range and negated Range</button><br/>
+    </td>
+  </tr>
+</table>
+<br/>
+<button onclick="testPushbackStringReader();">Test PushbackStringReader</button><br/>
+<button onclick="testRegexTokenizer();">Test RegexTokenizer</button><br/>
+<button onclick="testRegexParser();">Test RegexParser</button><br/>
+
+Output:<br/>
+<div id="output_div" style="font-family: Courier New, Monospace;"></div>
 
 <body>
 </html>

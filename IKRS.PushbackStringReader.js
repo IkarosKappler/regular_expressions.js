@@ -32,6 +32,13 @@ IKRS.PushbackStringReader = function( stringData,
     this.currentCharacterCode  = -1;  // Unicode number
     this.lineNumber            = 1;
     this.columnNumber          = 0;
+
+    this._resetMark            = null;
+
+    // Make an initial mark. This avoids that the _mark value can
+    // reach an undefined state (it cannot be unset, only overwritten
+    // with a new value).
+    this.mark();
 };
 
 IKRS.PushbackStringReader.prototype.getPosition = function() {
@@ -86,6 +93,27 @@ IKRS.PushbackStringReader.prototype.read = function() {
     
 };
 
+/**
+ * Returns the number of bytes actually matching the given string.
+ * Note that one character more than the returned value indicates was
+ * read!
+ *
+ * This function is usually used in combination with a predeceding mark()
+ * call to remember where the reader was.
+ **/
+IKRS.PushbackStringReader.prototype.tryRead = function( expectedString ) {
+    
+    var charactersMatching = 0;
+    while( this.read() != -1 && 
+	   this.currentCharacter == expectedString.charAt(charactersMatching) ) {
+	
+	charactersMatching++;
+
+    } 
+
+    return charactersMatching;
+};
+
 IKRS.PushbackStringReader.prototype.unread = function( n ) {
 
     // Unread 1 character by default
@@ -128,6 +156,34 @@ IKRS.PushbackStringReader.prototype.unread = function( n ) {
     return true;
 };
 
+IKRS.PushbackStringReader.prototype.mark = function() {
+    
+    // Just store the settings inside n object
+    this._resetMark = {
+	position:             this.position,
+	currentCharacter:     this.currentCharacter,
+	currentCharacterCode: this.currentCharacterCode,
+	lineNumber:           this.lineNumber,
+	columnNumber:         this.columnNumber
+    };
+};
+
+IKRS.PushbackStringReader.prototype.reset = function() {
+    
+    // Pre: this._resetMark cannot be undefined
+    this.position              = this._resetMark.position;
+    this.currentCharacter      = this._resetMark.currentCharacter;
+    this.currentCharacterCode  = this._resetMark.currentCharacterCode;
+    this.lineNumber            = this._resetMark.lineNumber;
+    this.columnNumber          = this._resetMark.columnNumber;
+
+};
+
+IKRS.PushbackStringReader.prototype.available = function() {
+    return this.maxReadLength-this.position;
+};
+
+
 IKRS.PushbackStringReader.prototype._detectCurrentLineLength = function() {
 
     var p  = this.position;
@@ -154,7 +210,7 @@ IKRS.PushbackStringReader.prototype.toString = function() {
     var shortString = this.stringData.substr(0,32);
     if( shortString.length < this.stringData.length )
 	shortString += "[..." + (this.stringData.length()-shortString.length()) + " more char(s)...]";
-    return "[IKRS.PushbackStringReader]={ stringData=" + shortString + ", startOffset=" + this.startOffset + ", maxReadLength=" + this.maxReadLength + " }";
+    return "[IKRS.PushbackStringReader]={ stringData=" + shortString + ", startOffset=" + this.startOffset + ", maxReadLength=" + this.maxReadLength + ", position=" + this.position + ", this.currentCharacter=" + this.currentCharacter + " }";
 };
 
 

@@ -1,0 +1,33 @@
+/**
+ * @author Ikaros Kappler
+ * @date 2013-04-09
+ * @version 1.0.0
+ **/
+
+
+IKRS.RegexCharacterRange = function( except,
+				     characterFrom,
+				     characterTo,
+				     characterCodeFrom,
+				     characterCodeTo
+				   ) {
+
+    IKRS.Object.call( this );
+
+    this.except            = except;
+    this.characterFrom     = characterFrom;
+    this.characterTo       = characterTo;
+    this.characterCodeFrom = characterCodeFrom;
+    this.characterCodeTo   = characterCodeTo;
+};
+
+IKRS.RegexCharacterRange.prototype.match = function( reader ) {
+    // ...
+};
+
+IKRS.RegexCharacterRange.prototype.toString = function() {
+    if( this.except )
+	return "[^" + this.characterFrom + "-" + this.characterTo + "]";
+    else
+	return "[" + this.characterFrom + "-" + this.characterTo + "]";
+};
