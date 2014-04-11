@@ -7,10 +7,12 @@
 
 IKRS.RegexIntersection = function( opt_left, opt_right ) {
 
-    IKRS.Object.call( this );
+    IKRS.Pattern.call( this, "INTERSECTION" );
 
 
-    this.children = [];
+    // children member inherited from IKRS.Pattern
+    //this.children = [];
+
     if( opt_left != null ) 
 	this.children.push( opt_left );
     if( opt_right != null ) 
@@ -26,7 +28,7 @@ IKRS.RegexIntersection.prototype.toString = function() {
     var str = "(";
     for( var i = 0; i < this.children.length; i++ ) {
 	if( i > 0 )
-	    str += " && ";
+	    str += "&&";
 	str += this.children[i];
     }
     str += ")";
@@ -36,4 +38,9 @@ IKRS.RegexIntersection.prototype.toString = function() {
 };
 
 
-IKRS.RegexIntersection.prototype.constructor = IKRS.RegexIntersection;
+IKRS.RegexIntersection.prototype.constructor     = IKRS.RegexIntersection;
+
+IKRS.RegexIntersection.prototype.getName         = IKRS.Pattern.prototype.getName;
+IKRS.RegexIntersection.prototype.getValue        = IKRS.Pattern.prototype.getValue
+IKRS.RegexIntersection.prototype.getChildren     = IKRS.Pattern.prototype.getChildren;
+IKRS.RegexIntersection.prototype.getAttributes   = IKRS.Pattern.prototype.getAttributes;

@@ -13,7 +13,7 @@ IKRS.RegexCharacterRange = function( negate,
 				     endSymbol
 				   ) {
 
-    IKRS.Object.call( this );
+    IKRS.Pattern.call( this, "RANGE[" + ( negate ? "NOT " : "" ) + startSymbol + "-" + endSymbol + "]" );
 
     this.negate            = negate;
     this.startSymbol       = startSymbol;
@@ -38,4 +38,9 @@ IKRS.RegexCharacterRange.prototype.toString = function() {
 };
 
 
-IKRS.RegexCharacterRange.prototype.constructor = IKRS.RegexCharacterRange;
+IKRS.RegexCharacterRange.prototype.constructor     = IKRS.RegexCharacterRange;
+
+IKRS.RegexCharacterRange.prototype.getName         = IKRS.Pattern.prototype.getName;
+IKRS.RegexCharacterRange.prototype.getValue        = IKRS.Pattern.prototype.getValue
+IKRS.RegexCharacterRange.prototype.getChildren     = IKRS.Pattern.prototype.getChildren;
+IKRS.RegexCharacterRange.prototype.getAttributes   = IKRS.Pattern.prototype.getAttributes;

@@ -5,11 +5,11 @@
  **/
 
 
-IKRS.RegexConstant = function( charSequence ) {
+IKRS.RegexConstant = function( tokenSequence ) {
 
-    IKRS.Object.call( this );
+    IKRS.Pattern.call( this, "CONSTANT[" + tokenSequence.toString() + "]" );
 
-    this.charSequence = charSequence;
+    this.tokenSequence = tokenSequence;
 };
 
 IKRS.RegexConstant.prototype.match = function( reader ) {
@@ -18,5 +18,13 @@ IKRS.RegexConstant.prototype.match = function( reader ) {
 
 IKRS.RegexConstant.prototype.toString = function() {
     //return "(" + this.charSequence + ")";
-    return this.charSequence;
+    return this.tokenSequence;
 };
+
+
+IKRS.RegexConstant.prototype.constructor     = IKRS.RegexConstant;
+
+IKRS.RegexConstant.prototype.getName         = IKRS.Pattern.prototype.getName;
+IKRS.RegexConstant.prototype.getValue        = IKRS.Pattern.prototype.getValue
+IKRS.RegexConstant.prototype.getChildren     = IKRS.Pattern.prototype.getChildren;
+IKRS.RegexConstant.prototype.getAttributes   = IKRS.Pattern.prototype.getAttributes;

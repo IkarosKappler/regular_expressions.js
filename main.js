@@ -97,13 +97,17 @@ function testRegexParser() {
     var parser     = new IKRS.RegexParser( tokenizer );
     //try {
 	var regex      = parser.read();	
-    displayOutput( "Result RegEx=" + regex.toString() );
+
+    var result = "Result RegEx=" + regex.toString() + "<br/>\n";
+    result += "<pre>\n";
+    result += pattern2string( regex );
+    result += "</pre>\n";
+    displayOutput( result );
     /*} catch( e ) {
 	displayOutput( e );
     }*/
 
 }
-
 
 function displayOutput( data ) {
     document.getElementById( "output_div" ).innerHTML = data;

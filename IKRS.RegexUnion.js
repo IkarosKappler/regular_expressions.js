@@ -7,19 +7,23 @@
 
 IKRS.RegexUnion = function( opt_left, opt_right ) {
 
-    IKRS.Object.call( this );
+    IKRS.Pattern.call( this, "UNION" );
 
-    /*
-    this.left  = left;
-    this.right = right;
-    */
 
-    this.children = [];
+    // children member inherited from IKRS.Pattern
+    //this.children = [];
+
     if( opt_left != null ) 
 	this.children.push( opt_left );
     if( opt_right != null ) 
 	this.children.push( opt_right );
 };
+
+/*
+IKRS.RegexUnion.prototype.addChild = function( regex ) {
+    this.children.push( regex );
+};
+*/
 
 IKRS.RegexUnion.prototype.match = function( reader ) {
     // ...
@@ -31,7 +35,7 @@ IKRS.RegexUnion.prototype.toString = function() {
     for( var i = 0; i < this.children.length; i++ ) {
 	if( i > 0 )
 	    str += "|";
-	str += this.children[i];
+	str += this.children[i].toString();
     }
     str += ")";
     
@@ -40,4 +44,9 @@ IKRS.RegexUnion.prototype.toString = function() {
 };
 
 
-IKRS.RegexUnion.prototype.constructor = IKRS.RegexUnion;
+IKRS.RegexUnion.prototype.constructor     = IKRS.RegexUnion;
+
+IKRS.RegexUnion.prototype.getName         = IKRS.Pattern.prototype.getName;
+IKRS.RegexUnion.prototype.getValue        = IKRS.Pattern.prototype.getValue
+IKRS.RegexUnion.prototype.getChildren     = IKRS.Pattern.prototype.getChildren;
+IKRS.RegexUnion.prototype.getAttributes   = IKRS.Pattern.prototype.getAttributes;

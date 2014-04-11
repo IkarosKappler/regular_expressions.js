@@ -1,0 +1,11 @@
+/**
+ * @author Ikaros Kappler
+ * @date 2014-04-10
+ * @version 1.0.0
+ **/
+
+IKRS.TokenSequence = function() {
+
+    IKRS.Object.call( this );
+
+}

@@ -63,11 +63,26 @@ IKRS.RegexToken.prototype.isStronger = function( token ) {
 };
 */
 
+IKRS.RegexToken.prototype.isQuantifyingOperator = function() {
+    return ( this.isOperator && 
+	     ( this.value == '*' || this.value == '+' || this.value == '{' || this.value == '}' )
+	   );
+};
+
+IKRS.RegexToken.prototype.isQuantifyingStartOperator = function() {
+    return ( this.isOperator && this.value == '{' );
+};
+
+IKRS.RegexToken.prototype.isQuantifyingEndOperator = function() {
+    return ( this.isOperator && this.value == '}' );
+};
 
 IKRS.RegexToken.prototype.isSternOperator = function() {
-    return ( this.isOperator && 
-	     ( this.value == '*' || this.value == '+' || this.value == '{' )
-	   );
+    return ( this.isOperator && this.value == '*' );
+};
+
+IKRS.RegexToken.prototype.isPlusOperator = function() {
+    return ( this.isOperator && this.value == '+' );
 };
 
 IKRS.RegexToken.prototype.isSetStartOperator = function() {
@@ -100,6 +115,22 @@ IKRS.RegexToken.prototype.isWhitespace = function() {
 
 IKRS.RegexToken.prototype.isExceptOperator = function() {
     return ( this.isOperator && this.value == "^" );
+};
+
+IKRS.RegexToken.isInteger = function( value, negativeAllowed ) {
+    if( value == null || value.length == 0 )
+	return false;
+
+    for( var i = 0; i < value.length; i++ ) {
+
+	if( i == 0 && value.charAt(i) == '-' && !negativeAllowed )
+	    return false;
+
+	if( (i != 0 || value.charAt(i) != '-') && !IKRS.RegexToken.isDecimalDigitCharacter(value.charAt(i)) )
+	    return false;
+
+    }
+    return true;
 };
 
 /**

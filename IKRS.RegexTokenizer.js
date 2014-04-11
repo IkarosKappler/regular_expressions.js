@@ -75,7 +75,10 @@ IKRS.RegexTokenizer.prototype._nextTokenWhitespaceAllowed = function() {
 	 
 	return this._setCurrentToken( new IKRS.RegexToken( constantValue, constantValue, false, true ) );
 
-    } else if( c0 == '*' || c0 == '+' || c0 == '(' || c0 == ')' || c0 == '[' || c0 ==  ']' || c0 == '|' ) {
+    } else if( c0 == '*' || c0 == '+' || c0 == '(' || c0 == ')' || 
+	       c0 == '[' || c0 ==  ']' || c0 == '|' || 
+	       c0 == '{' || c0 == '}' 
+	     ) {
 
 	return this._setCurrentToken( new IKRS.RegexToken( c0, c0, true, false ) );   // value, rawValue, is operator, no constant
 

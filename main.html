@@ -3,22 +3,34 @@
 <head>
 <meta charset="UTF-8" />
 <title>Javascript and Regular Expressions</title>
+
+<style>
+body {
+font-family: Courier New, Monospace;
+font-size:   10pt;
+}
+</style>
+
 <script language="Javascript" type="text/javascript" src="IKRS.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.Object.js"></script>
+<script language="Javascript" type="text/javascript" src="IKRS.Pattern.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.PushbackStringReader.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.StringBuffer.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexToken.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexTokenizer.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexParser.js"></script>
+<script language="Javascript" type="text/javascript" src="IKRS.TokenSequence.js"></script>
 
+<!-- These classes inherit from IKRS.Pattern -->
 <script language="Javascript" type="text/javascript" src="IKRS.RegexConstant.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexUnion.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexIntersection.js"></script>
-<script language="Javascript" type="text/javascript" src="IKRS.RegexKleene.js"></script>
+<script language="Javascript" type="text/javascript" src="IKRS.RegexQuantifyer.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexConcatenation.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexCharacter.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexCharacterSet.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexCharacterRange.js"></script>
+
 
 <script language="Javascript" type="text/javascript" src="main.js"></script>
 <script language="Javascript" type="text/javascript" src="util.js"></script>
@@ -27,7 +39,7 @@
 
 <body>
 
-Test
+<h3>Regular Expression Analyzer Test</h3>
 <table border="0">
   <tr>
     <td>
@@ -36,27 +48,120 @@ Test
       </form>
     </td>
     <td>
-      <button onclick="document.getElementById('input_text').value='abc';">Constant</button><br/>
-      <button onclick="document.getElementById('input_text').value='(abc)';">(Constant)</button><br/>
-      <button onclick="document.getElementById('input_text').value='abc|XYZ';">Constant Union</button><br/>
-      <button onclick="document.getElementById('input_text').value='abc*';">STERN(*)</button><br/>
-      <button onclick="document.getElementById('input_text').value='ab(c)*';">CONSTANT CONSTANT STERN(*)</button><br/>
-      <button onclick="document.getElementById('input_text').value='abc+';">STERN(+)</button><br/>
-      <button onclick="document.getElementById('input_text').value='abc|XYZ+';">UNION or STERN(+)</button><br/>
-      <button onclick="document.getElementById('input_text').value='(abc|XYZ)+';">UNION or STERN(+) (2)</button><br/>
-      <button onclick="document.getElementById('input_text').value='(abc)(XYZ)';">Concat</button><br/>
-      <button onclick="document.getElementById('input_text').value='[a-z]';">Range</button><br/>
-      <button onclick="document.getElementById('input_text').value='[^a-z]';">Range (negated)</button><br/>
-      <button onclick="document.getElementById('input_text').value='abcdef|[a-z]';">Constant or Range</button><br/>
-      <button onclick="document.getElementById('input_text').value='[asdf]';">Character Set</button><br/>
-      <button onclick="document.getElementById('input_text').value='[a-z&&[^m-k]]';">Range and negated Range</button><br/>
+      Examples<br/>
+      <button onclick="loadPreset('abc');">Constant</button><br/>
+      <button onclick="loadPreset('(abc)');">(Constant)</button><br/>
+      <button onclick="loadPreset('abc|XYZ');">Constant Union</button><br/>
+      <button onclick="loadPreset('abc*');">STERN(*)</button><br/>
+      <button onclick="loadPreset('ab(c)*');">CONSTANT CONSTANT STERN(*)</button><br/>
+      <button onclick="loadPreset('abc+');">STERN(+)</button><br/>
+      <button onclick="loadPreset('abc|XYZ+');">UNION or STERN(+)</button><br/>
+      <button onclick="loadPreset('(abc|XYZ)+');">UNION or STERN(+) (2)</button><br/>
+      <button onclick="loadPreset('(abc)(XYZ)');">Concat</button><br/>
+      <button onclick="loadPreset('[a-z]');">Range</button><br/>
+      <button onclick="loadPreset('[^a-z]');">Range (negated)</button><br/>
+      <button onclick="loadPreset('abcdef|[a-z]');">Constant or Range</button><br/>
+      <button onclick="loadPreset('[asdf]');">Character Set</button><br/>
+      <button onclick="loadPreset('[a-z&&[^m-k]]');">Range and negated Range</button><br/>
+      <button onclick="loadPreset('(abc|def){3}');">Quantifyer [3 times]</button><br/>
+      <button onclick="loadPreset('(abc|def){3,}');">Quantifyer [at least 3 times]</button><br/>
+      <button onclick="loadPreset('(abc|def){3,6}');">Quantifyer [at least 3 times, max 6 times]</button><br/>
+      <input type="checkbox" id="concat_presets"> Concatenate Presets<br/>
+
+    </td>
+
+    <td valign="top">
+      <table border="0">
+	<tr>
+	  <th colspan="2">Regular Grammars</th>
+	</tr>
+	<tr>
+	  <td>a</td>
+	  <td>The single character a</td>
+	</tr>
+	<tr>
+	  <td>asdf</td>
+	  <td>The constant character sequence asdf</td>
+	</tr>
+	<tr>
+	  <td>asdf|qwertz</td>
+	  <td>The constant character sequence asdf OR qwertz</td>
+	</tr>
+	<tr>
+	  <td>asdf*</td>
+	  <td>The sequence asdf zero or n times.</td>
+	</tr>
+	<tr>
+	  <td>asdf+</td>
+	  <td>The sequence asdf at least one or n times.</td>
+	</tr>
+	<tr>
+	  <td>(abcd|xyz)*</td>
+	  <td>Any sequence (including empty) that cosists of abcd and xyz sub sequences only</td>
+	</tr>
+	<tr>
+	  <td>cat{3}</td>
+	  <td>The sequence cat three times: catcatcat</td>
+	</tr>
+	<tr>
+	  <td>cat{3,5}</td>
+	  <td>The sequence cat three to five times: catcatcat, catcatcatcat or catcatcatcatcat</td>
+	</tr>
+	<tr>
+	  <td>cat{3,}</td>
+	  <td>The sequence cat at least three times: catcatcat, catcatcatcat or catcatcatcatcat, catcatcatcatcatcat, ...</td>
+	</tr>
+
+	<tr>
+	  <th colspan="2">Character classes</th>
+	</tr>
+	<tr>
+	  <td>[abc]</td>
+	  <td>a, b, or c (simple class)</td>
+	</tr>
+	<tr>
+	  <td>[^abc]</td>
+	  <td>Any character except a, b, or c (negation)</td>
+	</tr>
+	<tr>
+	  <td>[a-z]</td>
+	  <td>a through z, inclusive (range)</td>
+	</tr>
+	<tr>
+	  <td>[a-zA-Z]</td>
+	  <td>a through z or A through Z, inclusive (range)</td>
+	</tr>
+	<tr>
+	  <td>[^a-zA-Z]</td>
+	  <td>Any character except a through z and A through Z (range and negation)</td>
+	</tr>
+	<!--
+	<tr>
+	  <td>[a-d[m-p]]</td>
+ 	  <td>a through d, or m through p: [a-dm-p] (union)</td>
+	</tr>
+	-->
+	<tr>
+	  <td>[a-z&&[def]]</td>
+ 	  <td>d, e, or f (intersection)</td>
+	</tr>
+	<tr>
+	  <td>[a-z&&[^bc]]</td>
+ 	  <td>a through z, except for b and c: [ad-z] (subtraction)</td>
+	</tr>
+	<tr>
+	  <td>[a-z&&[^m-p]]</td>
+ 	  <td>a through z, and not m through p: [a-lq-z](subtraction)</td>
+	</tr>
+      </table>
     </td>
   </tr>
 </table>
 <br/>
-<button onclick="testPushbackStringReader();">Test PushbackStringReader</button><br/>
+      <button onclick="testPushbackStringReader();">Test PushbackStringReader</button><br/>
 <button onclick="testRegexTokenizer();">Test RegexTokenizer</button><br/>
 <button onclick="testRegexParser();">Test RegexParser</button><br/>
+
 
 Output:<br/>
 <div id="output_div" style="font-family: Courier New, Monospace;"></div>

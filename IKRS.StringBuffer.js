@@ -36,6 +36,12 @@ IKRS.StringBuffer.prototype.append = function( value ) {
     }
 };
 
+/*
+IKRS.StringBuffer.prototype.trim = function() {
+    
+};
+*/
+
 IKRS.StringBuffer.prototype.toString = function() {
     return this.buffer.join("");
 };
