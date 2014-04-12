@@ -31,7 +31,9 @@ IKRS.RegexCharacterRange.prototype.toString = function() {
     if( this.negate )
 	str += "^";
 
-    str += this.startSymbol.characterValue + "-" + this.endSymbol.characterValue;
+    //str += this.startSymbol.value + "-" + this.endSymbol.value;
+    //str += this.startSymbol.tokenvalue + "-" + this.endSymbol.token.value;
+    str += this.startSymbol.toString() + "-" + this.endSymbol.toString();
 
     str += "]";
     return str;

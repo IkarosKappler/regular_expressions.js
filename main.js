@@ -86,8 +86,11 @@ function testRegexTokenizer() {
 function testRegexParser() {
     
     //window.alert( "X" );
+    var startTime  = new Date().getTime();
+    //window.alert("X");
 
-    var stringData = document.getElementById( "input_text" ).value;
+    var inputElem  = document.getElementById( "input_text" );
+    var stringData = inputElem.value;
     
     var pbr        = new IKRS.PushbackStringReader( stringData,
 						    0,
@@ -95,17 +98,32 @@ function testRegexParser() {
 						  );
     var tokenizer  = new IKRS.RegexTokenizer( pbr );
     var parser     = new IKRS.RegexParser( tokenizer );
-    //try {
+    try {
 	var regex      = parser.read();	
+	
+	var endTime    = new Date().getTime();
 
-    var result = "Result RegEx=" + regex.toString() + "<br/>\n";
-    result += "<pre>\n";
-    result += pattern2string( regex );
-    result += "</pre>\n";
-    displayOutput( result );
-    /*} catch( e ) {
-	displayOutput( e );
-    }*/
+	var result = "Result RegEx=" + regex.toString() + "<br/>\n";
+	result += "<pre>\n";
+	result += pattern2string( regex );
+	result += "</pre><br/>\n";
+	result += "<b>Runtime: " + (endTime - startTime) + "ms<br/>\n";
+	displayOutput( result );
+    } catch( e ) {
+	// The exception should be a ParseException.
+	// (Runtime errors of course do not occur ^^)
+	if( e.errorMessage ) {
+	    displayOutput( "Parse Error: " + e.errorMessage + " at " + e.startOffset );
+
+	    inputElem.focus();
+	    if( inputElem.setSelectionRange )
+		inputElem.setSelectionRange( e.startOffset, e.endOffset ); 
+	    
+	} else {
+	    displayOutput( e );
+	    throw e;  // For error tracking
+	}
+    }
 
 }
 

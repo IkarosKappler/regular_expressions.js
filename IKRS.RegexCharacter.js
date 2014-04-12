@@ -25,7 +25,10 @@ IKRS.RegexCharacter.prototype.match = function( reader ) {
 };
 
 IKRS.RegexCharacter.prototype.toString = function() {
-    return this.token.value; //characterValue;
+    if( this.token.isEscaped )
+	this.token.rawValue;    // Eventually the *real* character value is not printable
+    else
+	return this.token.value;
 };
 
 

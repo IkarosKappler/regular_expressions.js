@@ -1,4 +1,11 @@
 /**
+ * The PushbackStringReader maps read(), unread() and available() functions
+ * onto strings. It also supports mark() and reset().
+ *
+ * Additionally it keeps track of the read position, read start and read
+ * end.
+ *
+ *
  * @author Ikaros Kappler
  * @date 2014-04-06
  * @version 1.0.0
@@ -7,6 +14,9 @@
 
 /**
  * 'stringData' must not be null.
+ * The parameters 'startOffset' and 'maxReadLength are optional and set to
+ * 0 (zero) respective stringData.length if not passed. If they are passed
+ * and out of bounds, the constructor will set them to propriate values.
  **/
 IKRS.PushbackStringReader = function( stringData,
 				      startOffset,
@@ -19,7 +29,7 @@ IKRS.PushbackStringReader = function( stringData,
 	startOffset = 0;
     
     if( typeof maxReadLength == "undefined" )
-	maxReadLength = stringData.length();
+	maxReadLength = stringData.length;
 
 
 
@@ -41,22 +51,41 @@ IKRS.PushbackStringReader = function( stringData,
     this.mark();
 };
 
+/**
+ * Get the current read position (relative to startOffset!).
+ **/
 IKRS.PushbackStringReader.prototype.getPosition = function() {
     return this.position;
 };
 
+/**
+ * The the current character from the read position. If EOI was reached
+ * or read() was not called before the function returns -1.
+ **/
 IKRS.PushbackStringReader.prototype.getCurrentCharacter = function() {
     return this.currentCharacter;
 };
 
+/**
+ * Get the current character's numeric code from the read position. If EOI
+ * was reached or read() was not called before the functions returns -1.
+ **/
 IKRS.PushbackStringReader.prototype.getCurrentCharacterCode = function() {
     return this.currentCharacterCode;
 };
 
+/**
+ * Get the current line number.
+ * The first line's number is 1 (one).
+ **/
 IKRS.PushbackStringReader.prototype.getLineNumber = function() {
     return this.lineNumber;
 };
 
+/**
+ * Get the current column number.
+ * The first column's number is 0 (zero).
+ **/
 IKRS.PushbackStringReader.prototype.getColumnNumber = function() {
     return this.columnNumber;
 };
@@ -101,6 +130,7 @@ IKRS.PushbackStringReader.prototype.read = function() {
  * This function is usually used in combination with a predeceding mark()
  * call to remember where the reader was.
  **/
+/*
 IKRS.PushbackStringReader.prototype.tryRead = function( expectedString ) {
     
     var charactersMatching = 0;
@@ -113,7 +143,15 @@ IKRS.PushbackStringReader.prototype.tryRead = function( expectedString ) {
 
     return charactersMatching;
 };
+*/
 
+/**
+ * Unreads n characters back to the stream so that they can be read again.
+ * If n is bigger than the number of characters that were already read, the
+ * function does nothing and returns false.
+ *
+ * On success the function returns true.
+ **/
 IKRS.PushbackStringReader.prototype.unread = function( n ) {
 
     // Unread 1 character by default
@@ -156,6 +194,10 @@ IKRS.PushbackStringReader.prototype.unread = function( n ) {
     return true;
 };
 
+/**
+ * Set a read mark at the current position.
+ * A later reset() call will restore the read state from the mark.
+ **/
 IKRS.PushbackStringReader.prototype.mark = function() {
     
     // Just store the settings inside n object
@@ -168,6 +210,10 @@ IKRS.PushbackStringReader.prototype.mark = function() {
     };
 };
 
+/**
+ * Restore the read state from a previously set mark.
+ * The initial mark is set to the begin of the input.
+ **/
 IKRS.PushbackStringReader.prototype.reset = function() {
     
     // Pre: this._resetMark cannot be undefined
@@ -179,11 +225,19 @@ IKRS.PushbackStringReader.prototype.reset = function() {
 
 };
 
+/**
+ * Returns the number of characters that are available to read.
+ * The returned value is absolute and not a proximation.
+ **/
 IKRS.PushbackStringReader.prototype.available = function() {
     return this.maxReadLength-this.position;
 };
 
 
+/**
+ * A private function that's used to restore the correct lineNumber-
+ * and columnNumber values after unread() was performed.
+ **/
 IKRS.PushbackStringReader.prototype._detectCurrentLineLength = function() {
 
     var p  = this.position;
@@ -201,11 +255,17 @@ IKRS.PushbackStringReader.prototype._detectCurrentLineLength = function() {
     return (this.position - p);
 };
 
+/**
+ * A private function that checks if the passed character/charCode pair represents
+ * a line break (used to keep track of lineNumber and columnNumber).
+ **/
 IKRS.PushbackStringReader.prototype._isLineBreak = function( character, characterCode ) {
     return ( character == '\n' || character == '\r' || characterCode == 0x0A || characterCode == 0x0D );
 };
 
-
+/**
+ * Make a string representation of the inner state of the reader.
+ **/
 IKRS.PushbackStringReader.prototype.toString = function() {
     var shortString = this.stringData.substr(0,32);
     if( shortString.length < this.stringData.length )
@@ -214,4 +274,5 @@ IKRS.PushbackStringReader.prototype.toString = function() {
 };
 
 
-IKRS.Object.prototype.contructor = IKRS.RegexToken;
+
+IKRS.PushbackStringReader.prototype.constructor = IKRS.PushbackStringReader;

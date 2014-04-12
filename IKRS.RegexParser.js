@@ -81,12 +81,12 @@ IKRS.RegexParser.prototype._readRegex = function() {
 	    operandA = this._readUnion();
 	    
 	} else {
-	    throw "Unexpected operator: " + this.tokenizer.currentToken.rawValue + " (" + this.tokenizer.currentToken.value + ").";
+	    this._throwParseException( "Unexpected operator: " + this.tokenizer.currentToken.rawValue + " (" + this.tokenizer.currentToken.value + ")." );
 	}
 
     } else {
 
-	throw "Symbol " + this.tokenizer.currentToken.rawValue + " is not an operator nor a constant value.";
+	this._throwParseException( "Symbol " + this.tokenizer.currentToken.rawValue + " is not an operator nor a constant value." );
 
     }
 
@@ -144,7 +144,7 @@ IKRS.RegexParser.prototype._readQuantifying = function() {
 	}
 
     } else {
-	throw "Unexpected operator at quantifyer start: '" + this.tokenizer.currentToken.value + "'.";
+	this._throwParseException( "Unexpected operator at quantifyer start: '" + this.tokenizer.currentToken.value + "'." );
     }
  
     //window.alert( "minCount=" + minCount + ", maxCount=" + maxCount );
@@ -187,7 +187,7 @@ IKRS.RegexParser.prototype._readComposite = function() {
     
     // Skip '('
     if( this.tokenizer.nextToken() == null )
-	throw "Unexpected EOI after '('.";
+	this._throwParseExcepttion( "Unexpected EOI after '('." );
     
     var result = this.currentRegex;
     while( !this.tokenizer.reachedEOI() && 
@@ -199,10 +199,10 @@ IKRS.RegexParser.prototype._readComposite = function() {
     }
     
     if( this.tokenizer.reachedEOI() )
-	throw "EOI reached where ')' is expected.";
+	this._throwParseException( "EOI reached where ')' is expected." );
 
     if( !this.tokenizer.currentToken.isClosingBracketOperator() ) 
-	throw "Unexpected token '" + this.tokenizer.currentToken.value + "' where operator ')' is expected.";
+	this._throwParseException( "Unexpected token '" + this.tokenizer.currentToken.value + "' where operator ')' is expected." );
     
     this.tokenizer.nextToken(); 
     // Composite directly followed by stern?
@@ -219,9 +219,9 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
     
     // Safety check for recursive calls :)
     if( this.tokenizer.reachedEOI() )
-	throw "Cannot read character set. Operator '[' expected, found instead: EOI.";
+	this._throwParseException( "Cannot read character set. Operator '[' expected, found instead: EOI." );
     if( !this.tokenizer.currentToken.isSetStartOperator() )
-	throw "Cannot read character set. Operator '[' expected, found instead: '" + this.tokenizer.currentToken.value + "'.";
+	this._throwParseException( "Cannot read character set. Operator '[' expected, found instead: '" + this.tokenizer.currentToken.value + "'." );
 
 
 
@@ -235,7 +235,7 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
     var negate               = p_negate; // false;
     var        t0            = this.tokenizer.nextToken();
     if( t0 == null ) 
-	throw "EOI reached but character set definition expected.";
+	this._throwParseException( "EOI reached but character set definition expected." );
     if( t0.isExceptOperator() ) {
 	negate = !negate; //true;
 	t0     = this.tokenizer.nextToken();
@@ -262,7 +262,7 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
 	    // The negation is only allowed at the first position, which was 
 	    // already read BEFORE the loop.
 	    // Other operators arent fine allowed here, too.
-	    throw "Operator '" + t0.value + "' not allowed here.";
+	    this._throwParseException( "Operator '" + t0.value + "' not allowed here." );
 
 
 
@@ -271,10 +271,21 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
 	    // - t0 is a character
 	    // - t2 must be present and also a character!
 	    var t2 = this.tokenizer.nextToken();
+
 	    if( t2 == null )
-		throw "Unexpected EOI after range operator '" + t1.value + "'.";
+		this._throwParseException( "Unexpected EOI after range operator '" + t1.value + "'." );
+
 	    if( t2.isOperator )
-		throw "Constant value expected after range operator '" + t1.value + "'. Found instead '" + t2.value +"' (operator).";
+		this._throwParseException( "Constant value expected after range operator '" + t1.value + "'. Found instead '" + t2.value +"' (operator)." );
+	    
+	    // Check for special characters?	    
+	    if( t0.isSpecialCharacter() )  // ^, $ or .
+		throw new IKRS.ParseException( "Special character '" + t0.value + "' not allowed in ranges.", t0.inputStartOffset, t0.inputEndOffset );
+
+	    if( t1.isSpecialCharacter() )  // ^, $ or .
+		throw new IKRS.ParseException( "Special character '" + t1.value + "' not allowed in ranges.", t0.inputStartOffset, t0.inputEndOffset );
+	    
+
 	    var tmpRange = new IKRS.RegexCharacterRange( negate,
 						         new IKRS.RegexCharacter(t0), //t0.value, t0.characterCode, t0.rawValue),
 							 new IKRS.RegexCharacter(t2)  //t2.value, t2.characterCode, t2.rawValue)
@@ -290,6 +301,11 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
 	    
 	    // t1 is no operator 
 	    //  -> will be the next t0 constant in a regular loop turn.
+
+	    if( t0.isSpecialCharacter() ) // ^, $ or .
+		this._throwParseException( "Special character '" + t0.value + "' not allowed in ranges." );
+
+
 	    var tmpChar = new IKRS.RegexCharacter( t0 ); //t0.value,
 						   //t0.characterCode,  // NOT YET AVAILABLE!
 						   //t0.rawValue
@@ -311,12 +327,9 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
 	    this.tokenizer.nextToken();
 	    optionalIntersection = this._readCharacterSet( negate ); // inherit negation sub set? What's the definition???
 	    
-	    // Restore consistent stat (this makes error handling easier)
+	    // Restore consistent state (this makes error handling after the loop easier)
 	    t1 = this.tokenizer.currentToken;
-	    //if( t1 != null && t1.isSetEndOperator() )
-	    //	endOfSetReached = true;
 
-	    //window.alert( "Y" + this.tokenizer.pushbackReader );
 	} 
 	
 	// Might be t1 from this loop OR from the recursive function call!
@@ -326,7 +339,6 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
 	    // The token will NOT be consumed later then.
 	    endOfSetReached = true;
 
-	    //window.alert( "t1 is set end. current token: " + this.tokenizer.currentToken );
 	}
 
 
@@ -339,7 +351,7 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
 
     // Empty set really not allowed?
     if( parentUnion.children.length == 0 )
-	throw "Empty character set not allowed.";
+	this._throwParseException( "Empty character set not allowed." );
 
     var finalRegex = null;
     if( parentUnion.children.length == 1 ) finalRegex = parentUnion.children[0];
@@ -353,9 +365,9 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
     
     // Loop terminated. End of set reached?
     if( t0 == null )
-	throw "EOI reached where end-of-set ']' is expected.";
+	this._throwParseException( "EOI reached where end-of-set ']' is expected." );
     if( !t0.isSetEndOperator() ) 
-	throw "Unexpected token '" + t0.value + "' reached, where end-of-set ']' is expected.";
+	this._throwParseException( "Unexpected token '" + t0.value + "' reached, where end-of-set ']' is expected." );
 
     //window.alert( "cur=" + this.tokenizer.currentToken );
 
@@ -379,7 +391,7 @@ IKRS.RegexParser.prototype._readUnion = function() {
     // So switch to the next token, then read the next regex, then 
     // construct a UNION regex.  
     if( this.tokenizer.nextToken() == null )
-	throw "Unexpected EOI after union operator '|'.";
+	this._throwParseException( "Unexpected EOI after union operator '|'." );
 
     // Take the last regex
     var lastRegex = this.currentRegex;
@@ -418,11 +430,8 @@ IKRS.RegexParser.prototype._readConstant = function( allowDashAsConstant ) {
 	 ) { 
 	
 
-	this._read(); // this._readRegex();
+	this._read(); 
     }
-
-    // Is UNION following?
-    // ...
 
     return this.currentRegex;
 };
@@ -445,7 +454,7 @@ IKRS.RegexParser.prototype.__readAttributeList = function() {
 	//window.alert( t0.value );
 	
 	if( t0.isQuantifyingStartOperator() )
-	    throw "Could not read quantifyer/attribute list. Unexpected '{' operator.";
+	    this._throwParseException( "Could not read quantifyer/attribute list. Unexpected '{' operator." );
 
 	if( t0.value == ',') {
 	    // The regex trims the string ^_^
@@ -467,17 +476,24 @@ IKRS.RegexParser.prototype.__readAttributeList = function() {
     
 
     if( this.tokenizer.reachedEOI() )
-	throw "EOI reached when reading quantifyer/attribute list. Missing end-of-attributes '}' operator.";
+	this._throwParseException( "EOI reached when reading quantifyer/attribute list. Missing end-of-attributes '}' operator." );
 
     if( !this.tokenizer.currentToken.isQuantifyingEndOperator() )
-	throw "Could not read quantifyer/attribute list. Missing end-of-attributes '}' operator.";
+	this._throwParseException( "Could not read quantifyer/attribute list. Missing end-of-attributes '}' operator." );
 
     // Consume '}'
     this.tokenizer.nextToken();
 
     
     //window.alert( array2string(this.currentRegex.attributes) );
-}
+};
+
+IKRS.RegexParser.prototype._throwParseException = function( errmsg ) {
+    throw new IKRS.ParseException( errmsg,
+				   this.tokenizer.pushbackReader.position,
+				   this.tokenizer.pushbackReader.position+1
+				 );
+};
 
 
 IKRS.RegexParser.prototype.constructor = IKRS.RegexParser;

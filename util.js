@@ -52,7 +52,7 @@ function pattern2string( pattern, indent ) {
 //	return pattern;
     str += indent + pattern.getName() + "\n";
     if( pattern.children.length > 0 ) {
-	str += indent + " [children]\n";
+	//str += indent + " [children]\n";
 	for( var i = 0; i < pattern.children.length; i++ ) {
 	    str += pattern2string( pattern.children[i], 
 				   indent + "      " 

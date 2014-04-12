@@ -20,6 +20,7 @@ font-size:   10pt;
 <script language="Javascript" type="text/javascript" src="IKRS.RegexTokenizer.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexParser.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.TokenSequence.js"></script>
+<script language="Javascript" type="text/javascript" src="IKRS.ParseException.js"></script>
 
 <!-- These classes inherit from IKRS.Pattern -->
 <script language="Javascript" type="text/javascript" src="IKRS.RegexConstant.js"></script>
@@ -34,20 +35,27 @@ font-size:   10pt;
 
 <script language="Javascript" type="text/javascript" src="main.js"></script>
 <script language="Javascript" type="text/javascript" src="util.js"></script>
+<script language="Javascript" type="text/javascript" src="version.js"></script>
 </head>
 
 
 <body>
 
-<h3>Regular Expression Analyzer Test</h3>
+<h3>Regular Expression Analyzer Test </h3>
 <table border="0">
   <tr>
-    <td>
+    <td valign="top">
       <form name="regex_form">
 	<textarea name="input_text" id="input_text" cols="75" rows="15">[^0-9]([_a-zA-Z]|[0-9])*</textarea>
+	<div style="text-align: right;"><script>document.write( VERSION_STRING );</script></div>
       </form>
+      <button onclick="testPushbackStringReader();">Test PushbackStringReader</button><br/>
+      <button onclick="testRegexTokenizer();">Test RegexTokenizer</button><br/>
+      <button onclick="testRegexParser();">Test RegexParser</button><br/>
+      Output:<br/>
+      <div id="output_div" style="font-family: Courier New, Monospace;"></div>
     </td>
-    <td>
+    <td valign="top">
       Examples<br/>
       <button onclick="loadPreset('abc');">Constant</button><br/>
       <button onclick="loadPreset('(abc)');">(Constant)</button><br/>
@@ -67,7 +75,11 @@ font-size:   10pt;
       <button onclick="loadPreset('(abc|def){3,}');">Quantifyer [at least 3 times]</button><br/>
       <button onclick="loadPreset('(abc|def){3,6}');">Quantifyer [at least 3 times, max 6 times]</button><br/>
       <input type="checkbox" id="concat_presets"> Concatenate Presets<br/>
+    </td>
 
+    <td valign="top">
+      Examples<br/>
+      <button onclick="loadPreset('Trademark.\\u2122.Backslash.\\\\');">Constant</button><br/>
     </td>
 
     <td valign="top">
@@ -112,8 +124,79 @@ font-size:   10pt;
 	  <td>The sequence cat at least three times: catcatcat, catcatcatcat or catcatcatcatcat, catcatcatcatcatcat, ...</td>
 	</tr>
 
+	
 	<tr>
-	  <th colspan="2">Character classes</th>
+	  <th colspan="2">Escaping Characters</th>
+	</tr>
+	<tr>
+	  <td>\\</td>
+	  <td>The backslash character</td>
+	</tr>
+	<tr>
+	  <td>\0n</td>
+          <td>The character with octal value 0n (0 <= n <= 7)</td>
+							   </tr>
+	<tr>
+	  <td>\0nn</td>
+          <td>The character with octal value 0nn (0 <= n <= 7)</td>
+							    </tr>
+	<tr>
+	  <td>\0mnn</td>
+          <td>The character with octal value 0mnn (0 <= m <= 3, 0 <= n <= 7)</td>
+									  </tr>
+	<tr>
+	  <td>\xhh</td>
+          <td>The character with hexadecimal value 0xhh</td>
+	</tr>
+	<tr>
+	  <td>\uhhhh</td>
+          <td>The character with hexadecimal value 0xhhhh</td>
+	</tr>
+	<tr>
+	  <td>\t</td>
+	  <td>The tab character ('\u0009')</td>
+	</tr>
+	<tr>
+	  <td>\n</td>
+          <td>The newline (line feed) character \u000A</td>
+	</tr>
+	<tr>
+	  <td>\r</td>
+          <td>The carriage-return character \u000D</td>
+	</tr>
+	<tr>
+	  <td>\f</td>
+          <td>The form-feed character ('\u000C')</td>
+	</tr>
+	<tr>
+	  <td>\a</td>
+          <td>The alert (bell) character ('\u0007')</td>
+	</tr>
+	<tr>
+	  <td>\e</td>
+	  <td>The escape character ('\u001B')</td>
+	</tr>
+
+
+	<tr>
+	  <th colspan="2">Special tokens</th>
+	</tr>
+	<tr>
+	  <td>^</td>
+	  <td>Start of input.</td>
+	</tr>
+	<tr>
+	  <td>$</td>
+	  <td>End of input.</td>
+	</tr>
+	<tr>
+	  <td>.</td>
+	  <td>Any character (wild card).</td>
+	</tr>
+
+
+	<tr>
+	  <th colspan="2">Character Classes</th>
 	</tr>
 	<tr>
 	  <td>[abc]</td>
@@ -153,18 +236,57 @@ font-size:   10pt;
 	  <td>[a-z&&[^m-p]]</td>
  	  <td>a through z, and not m through p: [a-lq-z](subtraction)</td>
 	</tr>
+
+
+	<tr>
+	  <th colspan="2">Predefined Character Classes</th>
+	</tr>
+	<tr>
+	  <td>.</td>
+	  <td>Any character (may or may not match line terminators)</td>
+	</tr>
+	<tr>
+	  <td>\d</td>
+          <td>A digit: [0-9]</td>
+	</tr>
+	<tr>
+	  <td>\D</td>
+          <td>A non-digit: [^0-9]</td>
+	</tr>
+	<tr>
+	  <td>\s</td>
+          <td>A whitespace character: [\t\n\x0B\f\r]</td>
+	</tr>
+	<tr>
+	  <td>\S</td>
+          <td>A non-whitespace character: [^\s]</td>
+	</tr>
+	<tr>
+	  <td>\w</td>
+	  <td>A word character: [a-zA-Z_0-9]</td>
+	</tr>
+	<tr>
+	  <td>\W</td>
+          <td>A non-word character: [^\w]</td>
+	</tr>
       </table>
+      
+      <br/>
+      <br/>
+      <br/>
+      <b>To do:</b><br/>
+      <ul>
+	<li>Character-Escaping in der Eingabe erlauben</li>
+	<li>match()-Funktionen implementieren</li>
+	<li>Datenstrukturen für longest-match (multi) schreiben</li>
+	
+      </ul>
+      
     </td>
   </tr>
 </table>
 <br/>
-      <button onclick="testPushbackStringReader();">Test PushbackStringReader</button><br/>
-<button onclick="testRegexTokenizer();">Test RegexTokenizer</button><br/>
-<button onclick="testRegexParser();">Test RegexParser</button><br/>
 
 
-Output:<br/>
-<div id="output_div" style="font-family: Courier New, Monospace;"></div>
-
-<body>
+</body>
 </html>

@@ -1,6 +1,6 @@
 /**
- * 0.2
- * 2.0e1
+ * A token class.
+ *
  *
  * @author Ikaros Kappler
  * @date 2014-04-06
@@ -16,16 +16,23 @@
 IKRS.RegexToken = function( value, 
 			    rawValue,
 			    isOperator,
-			    // isDualOperator,
-			    isConstant
+			    isConstant,
+			    isEscaped,
+			    
+			    inputStartOffset,
+			    inputEndOffset
 			  ) {
 
     IKRS.Object.call();
 
-    this.value       = value;
-    this.rawValue    = rawValue;
-    this.isOperator  = isOperator;
-    this.isConstant  = isConstant;
+    this.value            = value;
+    this.rawValue         = rawValue;
+    this.isOperator       = isOperator;
+    this.isConstant       = isConstant;
+    this.isEscaped        = isEscaped;
+    
+    this.inputStartOffset = inputStartOffset;
+    this.inputEndOffset   = inputEndOffset;
 };
 
 IKRS.RegexToken.KLEENESTERN      = "*";     
@@ -35,37 +42,25 @@ IKRS.RegexToken.CLOSINGBRACKET   = ")";
 IKRS.RegexToken.SETSTART         = "[";
 IKRS.RegexToken.SETEND           = "]";
 IKRS.RegexToken.RANGE            = "-";
-//IKRS.RegexToken.INTERSECTION     = "&&";
+IKRS.RegexToken.INTERSECTION     = "&&";
 IKRS.RegexToken.UNION            = "|";
 IKRS.RegexToken.EXCEPT           = "^";   // Directly after '['
 IKRS.RegexToken.BEGIN_OF_INPUT   = "^";   // Anywhere
 IKRS.RegexToken.END_OF_INPUT     = "$";
+IKRS.RegexToken.ANY_CHARACTER    = ".";
 
 
-/*
-IKRS.RegexToken.prototype.isStronger = function( token ) {
 
-    if( token == null )
-	return true;
-
-    if( !this.isOperator ) {
-	if( !token.isOperator )            return false;
-	else                               return true;   // token is operator; all operators are stronger than non-operators
-    } else {
-	if( !token.isOperator )            return false;
-	else if( this.isSternOperator() )  return token.isSetStartOperator();
-	    
-
-
-	}
-    }
-
-};
-*/
 
 IKRS.RegexToken.prototype.isQuantifyingOperator = function() {
     return ( this.isOperator && 
 	     ( this.value == '*' || this.value == '+' || this.value == '{' || this.value == '}' )
+	   );
+};
+
+IKRS.RegexToken.prototype.isSpecialCharacter = function() {
+    return ( !this.isEscaped && 
+	     ( this.value == "." || this.value == "^" || this.value == "$" )
 	   );
 };
 
@@ -133,6 +128,26 @@ IKRS.RegexToken.isInteger = function( value, negativeAllowed ) {
     return true;
 };
 
+IKRS.RegexToken.isHexadecimal = function( value ) {
+    for( var i = 0; i < value.length; i++ ) {
+
+	if( !IKRS.RegexToken.isHexadecimalCharacter(value.charAt(i)) )
+	    return false;
+
+    }
+    return true;
+};
+
+IKRS.RegexToken.isOctal = function( value ) {
+    for( var i = 0; i < value.length; i++ ) {
+
+	if( !IKRS.RegexToken.isOctalCharacter(value.charAt(i)) )
+	    return false;
+
+    }
+    return true;
+};
+
 /**
  * If this is set the symbol has a special
  * meaning:<br>
@@ -146,7 +161,7 @@ IKRS.RegexToken.isInteger = function( value, negativeAllowed ) {
  **/
 
 IKRS.RegexToken.prototype.toString = function() {
-    return "[IKRS.RegexToken]={ value=" + this.value + ", rawValue=" + this.rawValue + ", isOperator=" + this.isOperator + " }";
+    return "[IKRS.RegexToken]={ value=" + this.value + ", rawValue=" + this.rawValue + ", isOperator=" + this.isOperator + ", isConstant=" + this.isConstant + ", isEscaped=" + this.isEscaped + ", inputStart=" + this.inputStartOffset + ", inputEnd=" + this.inputEndOffset + " }";
 };
 
 /**
@@ -169,7 +184,25 @@ IKRS.RegexToken.isDecimalDigitCharacter = function( character ) {
 
 };
 
-IKRS.RegexToken.isHexadecimalDigitCharacter = function( character ) {
+/**
+ * Checks whether the passed character (string with length 1) is n octal
+ * digit.
+ **/
+IKRS.RegexToken.isOctalDigitCharacter = function( character ) {
+
+    return ( character == "0" ||
+	     character == "1" ||
+	     character == "2" ||
+	     character == "3" ||
+	     character == "4" ||
+	     character == "5" ||
+	     character == "6" ||
+	     character == "7" 
+	   );
+
+};
+
+IKRS.RegexToken.isHexadecimalCharacter = function( character ) {
 
     return ( IKRS.RegexToken.isDecimalDigitCharacter( character ) ||
 	     character == "A" ||
