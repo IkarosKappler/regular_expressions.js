@@ -13,7 +13,7 @@
  *       It can be an operator AND it can be a constant simultaneously - depending
  *       on the context.
  **/
-IKRS.RegexToken = function( value, 
+IKRS.RegexToken = function( value, 			    
 			    rawValue,
 			    isOperator,
 			    isConstant,
@@ -50,6 +50,17 @@ IKRS.RegexToken.END_OF_INPUT     = "$";
 IKRS.RegexToken.ANY_CHARACTER    = ".";
 
 
+
+IKRS.RegexToken.prototype.getCharacterCode = function() {
+
+    // This is for later matching. If this token's value has more than one character
+    // then the first one is taken.
+    if( this.value.length == 0 ) // This is much more secure.
+	return -1; 
+    else
+	return this.value.charCodeAt(0);
+
+};
 
 
 IKRS.RegexToken.prototype.isQuantifyingOperator = function() {

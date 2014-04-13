@@ -20,7 +20,7 @@ IKRS.RegexParser = function( tokenizer ) {
 };
 
 
-IKRS.RegexParser.prototype.read = function() {
+IKRS.RegexParser.prototype.parse = function() {
     // Invariant: on each reading function call the tokenizer 
     //            points onto the _current_ token!
 
@@ -60,12 +60,13 @@ IKRS.RegexParser.prototype.term = function() {
 
     while( this.tokenizer.currentToken != null && //!this.tokenizer.reachedEOI() && 
 	   !this.tokenizer.currentToken.isClosingBracketOperator() &&
+	   !this.tokenizer.currentToken.isSetEndOperator() &&
 	   !this.tokenizer.currentToken.isUnionOperator() 
 	 ) {
 
 	//window.alert( "currentToken=" + this.tokenizer.currentToken );
 	var nextFactor = this.factor();
-	// Consume '*'
+	// Consume '*'?
 	//this.tokenizer.nextToken();
 	if( factor != null )
 	    factor = new IKRS.RegexConcatenation( factor, nextFactor );
@@ -425,8 +426,8 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
 	    
 
 	    var tmpRange = new IKRS.RegexCharacterRange( negate,
-						         new IKRS.RegexCharacter(t0), //t0.value, t0.characterCode, t0.rawValue),
-							 new IKRS.RegexCharacter(t2)  //t2.value, t2.characterCode, t2.rawValue)
+						         t0, // new IKRS.RegexCharacter(t0), //t0.value, t0.characterCode, t0.rawValue),
+							 t2  // new IKRS.RegexCharacter(t2)  //t2.value, t2.characterCode, t2.rawValue)
 						       );
 	    ranges.push( tmpRange );
 	    parentUnion.children.push( tmpRange );
@@ -435,7 +436,7 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
 	    t1 = this.tokenizer.nextToken();
 
 
-	} else {
+	} else { //if( t0 != null ) {
 	    
 	    // t1 is no operator 
 	    //  -> will be the next t0 constant in a regular loop turn.
@@ -448,8 +449,8 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
 						   //t0.characterCode,  // NOT YET AVAILABLE!
 						   //t0.rawValue
 						 //);
-	    characters.push( tmpChar );
-	    parentUnion.children.push( tmpChar );
+	    characters.push( t0 ); //tmpChar );
+	    //parentUnion.children.push( tmpChar );
 	
 	    
 	}
@@ -485,6 +486,11 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
 
     } // END while
     
+
+    if( characters.length != 0 ) {
+	var characterSet = new IKRS.RegexCharacterSet( negate, characters );
+	parentUnion.children.push( characterSet );
+    }
     
 
     // Empty set really not allowed?

@@ -52,6 +52,14 @@ IKRS.PushbackStringReader = function( stringData,
 };
 
 /**
+ * Check whether this read has reached the end of input (EOI).
+ * The read() function will return -1 if so.
+ **/
+IKRS.PushbackStringReader.prototype.reachedEOI = function() {
+    return (this.position >= this.maxReadLength);
+};
+
+/**
  * Get the current read position (relative to startOffset!).
  **/
 IKRS.PushbackStringReader.prototype.getPosition = function() {
@@ -197,6 +205,9 @@ IKRS.PushbackStringReader.prototype.unread = function( n ) {
 /**
  * Set a read mark at the current position.
  * A later reset() call will restore the read state from the mark.
+ *
+ * Note that this function returns a mark object which can be applied
+ * to resetTo(...) at any time.
  **/
 IKRS.PushbackStringReader.prototype.mark = function() {
     
@@ -208,22 +219,51 @@ IKRS.PushbackStringReader.prototype.mark = function() {
 	lineNumber:           this.lineNumber,
 	columnNumber:         this.columnNumber
     };
+    
+    return this._resetMark;
 };
+
 
 /**
  * Restore the read state from a previously set mark.
  * The initial mark is set to the begin of the input.
  **/
 IKRS.PushbackStringReader.prototype.reset = function() {
-    
     // Pre: this._resetMark cannot be undefined
+    this._resetTo( this._resetMark );
+};
+
+
+/**
+ * Restore the read state to the given mark. The mark object
+ * must be structured as one returned by the mark() function.
+ *
+ * If any of the mark's parameters do not apply, the reader
+ * is unchanged an the function returns false (true otherwise).
+ **/
+IKRS.PushbackStringReader.prototype.resetTo = function( mark ) {
+    
+    // Check the mark properties before applying them!
+    if( mark.position < 1 || mark.position > this.maxReadLength )
+	return false;
+
     this.position              = this._resetMark.position;
-    this.currentCharacter      = this._resetMark.currentCharacter;
-    this.currentCharacterCode  = this._resetMark.currentCharacterCode;
+    
+    if( this.position == this.startOffset-1 || mark.position > this.maxReadLength ) {
+	this.currentCharacter     = -1;
+	this.currentCharacterCode = -1;
+    } else {
+	this.currentCharacter     = this.stringData.charAt( this.startOffst + this.position );
+	this.currentCharacterCode = this.stringData.charCodeAt( this.startOffst + this.position );
+    }
+    //this.currentCharacter      = this._resetMark.currentCharacter;
+    //this.currentCharacterCode  = this._resetMark.currentCharacterCode;
+
     this.lineNumber            = this._resetMark.lineNumber;
     this.columnNumber          = this._resetMark.columnNumber;
 
 };
+
 
 /**
  * Returns the number of characters that are available to read.

@@ -6,9 +6,9 @@
 function loadPreset( preset ) {
 
     if( document.getElementById("concat_presets").checked )
-	document.getElementById('input_text').value += preset;
+	document.getElementById('input_regex').value += preset;
     else
-	document.getElementById('input_text').value = preset;
+	document.getElementById('input_regex').value = preset;
 
 }
 

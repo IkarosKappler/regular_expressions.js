@@ -13,7 +13,7 @@ IKRS.RegexCharacterRange = function( negate,
 				     endSymbol
 				   ) {
 
-    IKRS.Pattern.call( this, "RANGE[" + ( negate ? "NOT " : "" ) + startSymbol + "-" + endSymbol + "]" );
+    IKRS.Pattern.call( this, "RANGE[" + ( negate ? "NOT " : "" ) + startSymbol.value + "-" + endSymbol.value + "]" );
 
     this.negate            = negate;
     this.startSymbol       = startSymbol;
@@ -22,7 +22,41 @@ IKRS.RegexCharacterRange = function( negate,
 
 
 IKRS.RegexCharacterRange.prototype.match = function( reader ) {
-    // ...
+
+    // Read one character from the input
+    var c     = reader.read();
+    
+    // EOI reached?
+    if( c == -1 ) {
+
+	return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_INCOMPLETE,
+				       0,   // read index 0 if input
+				       0    // no characters matching
+				     )
+	       ];
+    } else {
+	
+	var cCode = c.charCodeAt( 0 );
+	if( !this.negate && this.startSymbol.getCharacterCode() <= cCode && cCode <= this.endSymbol.getCharacterCode() ) {
+
+	    return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_COMPLETE,
+					   0,  // read index
+					   1   // one character matching
+					 )
+		   ];
+	    
+	} else {
+
+	    return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_FAIL,
+					   0,  // read index
+					   0   // no characters matching
+					 )
+		   ];
+
+	}
+
+    }
+
 };
 
 IKRS.RegexCharacterRange.prototype.toString = function() {
@@ -33,7 +67,7 @@ IKRS.RegexCharacterRange.prototype.toString = function() {
 
     //str += this.startSymbol.value + "-" + this.endSymbol.value;
     //str += this.startSymbol.tokenvalue + "-" + this.endSymbol.token.value;
-    str += this.startSymbol.toString() + "-" + this.endSymbol.toString();
+    str += this.startSymbol.value + "-" + this.endSymbol.value;
 
     str += "]";
     return str;

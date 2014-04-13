@@ -13,7 +13,41 @@ IKRS.RegexConstant = function( tokenSequence ) {
 };
 
 IKRS.RegexConstant.prototype.match = function( reader ) {
-    // ...
+
+    // Try to read token by token from the reader
+    for( var i = 0; i < this.tokenSequence.tokens.length; i++ ) {
+
+	var token = this.tokenSequence.tokens[i];
+	var c     = reader.read();
+	
+	if( c == -1 ) {
+	    // EOI is no real character
+	    return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_INCOMPLETE,
+					   0,
+					   i
+					 )
+		   ];
+	} else if( c != token.value ) {
+	    // Token does not match
+	    return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_FAIL,
+					   0,
+					   i
+					 )
+		   ];
+	    
+	    
+	} 
+	// else: noop
+
+    } // END for
+
+    // All expected characters found.
+    return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_COMPLETE,
+				   0,
+				   this.tokenSequence.tokens.length
+				 )
+	   ];
+    
 };
 
 IKRS.RegexConstant.prototype.toString = function() {

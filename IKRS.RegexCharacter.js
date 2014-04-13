@@ -21,7 +21,35 @@ IKRS.RegexCharacter = function( token ) {
 
 
 IKRS.RegexCharacter.prototype.match = function( reader ) {
-    // ...
+    // Try to read one token from the reader
+ 
+    var c     = reader.read();
+    
+    if( c == -1 ) {
+	// EOI is no real character
+	return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_INCOMPLETE,
+				       0,
+				       0
+				     ) 
+	       ];
+    } else if( c != this.token.value ) {
+	// Token does not match
+	return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_FAIL,
+				       0,
+				       0
+				     )
+	       ];
+	
+	
+    } else {
+
+	// Expected character found.
+	return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_COMPLETE,
+				       0,
+				       1
+				     )
+	       ];
+    }
 };
 
 IKRS.RegexCharacter.prototype.toString = function() {

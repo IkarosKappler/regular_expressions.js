@@ -4,12 +4,20 @@
  * @version 1.0.0
  **/
 
-IKRS.RegexCharacterSet = function( negate ) {
+/**
+ * The passed characters array must consist (if not null) of IKRS.RegexToken
+ * instances.
+ **/
+IKRS.RegexCharacterSet = function( negate, opt_characters ) {
 
     IKRS.Pattern.call( this, "SET[...]" );
 
     this.negate            = negate;
-    this.characters        = [];
+    
+    if( opt_characters != null )
+	this.characters = opt_characters;
+    else
+	this.characters        = [];
     
 };
 
@@ -24,7 +32,60 @@ IKRS.RegexCharacterSet.prototype.addCharacter = function( character ) {
 };
 
 IKRS.RegexCharacterSet.prototype.match = function( reader ) {
-    // ...
+    // Read one character from the reader.
+    var c = reader.read();
+    
+    // And try to match it.
+    if( c == -1 ) {
+
+	return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_INCOMPLETE,
+				       0,
+				       0
+				     )
+	       ];
+
+    } else if( this.negate ) {
+
+	for( var i = 0; i < this.characters.length; i++ ) {
+	    // Negation. No character must match.
+	    var token = this.characters[i];
+	    if( token.value == c ) {
+		return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_FAIL,
+					       0,  // read index 0 of input
+					       0   // 0 characters matched
+					     )
+		       ];
+	    }	    	    
+	} // END for
+	// Loop terminated: character does not belong to negated set.
+	// -> matches
+	return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_COMPLETE,
+				       0,  // read index 0 of input
+				       1   // 1 character matching
+				     )
+	       ];
+
+    } else {
+
+	for( var i = 0; i < this.characters.length; i++ ) {
+	    // No negation. At least one character must match.
+	    var token = this.characters[i];
+	    if( token.value == c ) {
+		return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_COMPLETE,
+					       0,  // read index 0 of input
+					       1   // 1 character matching
+					     )
+		       ];
+	    } 
+	} // END for
+	// Loop terminated: character does not belong to normal set.
+	//  -> no match at all
+	return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_FAIL,
+				       0,  // read index 0 of input
+				       0   // 0 characters matched
+				     )
+	       ];
+    }
 };
 
 IKRS.RegexCharacterSet.prototype.toString = function() {
@@ -32,8 +93,12 @@ IKRS.RegexCharacterSet.prototype.toString = function() {
     if( this.negate )
 	str += "^";
 
-    for( var i = 0; i < this.characters.length; i++ )
-	str += this.characters[i];
+    for( var i = 0; i < this.characters.length; i++ ) {
+	if( this.characters[i].isEscaped )
+	    str += this.characters[i].rawValue;
+	else
+	    str += this.characters[i].value;
+    }
 
     str += "]";
     return str;
@@ -49,7 +114,10 @@ IKRS.RegexCharacterSet.prototype.getName = function() {
     for( var i = 0; i < this.characters.length; i++ ) {
 	if( i > 0 )
 	    str += " | ";
-	str += this.characters[i];
+	if( this.characters[i].isEscaped )
+	    str += this.characters[i].rawValue;
+	else
+	    str += this.characters[i].value;
     }
 
     str += "]";

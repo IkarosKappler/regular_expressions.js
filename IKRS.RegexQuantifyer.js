@@ -21,7 +21,19 @@ IKRS.RegexQuantifyer = function( baseRegex,
 };
 
 IKRS.RegexQuantifyer.prototype.match = function( reader ) {
-    // ...
+
+    var i = 0;
+    var c;
+    var mark;
+    // Check how many times the base pattern can be repeatedly matched.
+    while( !reader.reachedEOI() ) {
+
+	var tmpResults = this.baseRegex.match( reader );
+
+    }
+
+    //return [];
+    
 };
 
 IKRS.RegexQuantifyer.prototype.toString = function() {

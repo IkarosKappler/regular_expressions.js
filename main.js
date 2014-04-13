@@ -6,7 +6,7 @@
 
 function testPushbackStringReader() {
 
-    var stringData = document.getElementById( "input_text" ).value;
+    var stringData = document.getElementById( "input_regex" ).value;
     
     var pbr        = new IKRS.PushbackStringReader( stringData,
 						    0,
@@ -52,13 +52,13 @@ function testPushbackStringReader() {
     
 
     result += "END OF TEST<br/>\n";
-    displayOutput( result );
+    displayOutput( result, false );
 }
 
 
 function testRegexTokenizer() {
 
-    var stringData = document.getElementById( "input_text" ).value;
+    var stringData = document.getElementById( "input_regex" ).value;
     
     var pbr        = new IKRS.PushbackStringReader( stringData,
 						    0,
@@ -75,14 +75,14 @@ function testRegexTokenizer() {
     }
 
     result += i + " token(s) found.<br/>\n";
-    displayOutput( result );
+    displayOutput( result, false );
 }
 
-function testRegexParser() {
+function testRegexParser( displaySuccess ) {
     
     var startTime  = new Date().getTime();
 
-    var inputElem  = document.getElementById( "input_text" );
+    var inputElem  = document.getElementById( "input_regex" );
     var stringData = inputElem.value;
     
     var pbr        = new IKRS.PushbackStringReader( stringData,
@@ -92,21 +92,24 @@ function testRegexParser() {
     var tokenizer  = new IKRS.RegexTokenizer( pbr );
     var parser     = new IKRS.RegexParser( tokenizer );
     try {
-	var regex      = parser.read();	
+	var regex      = parser.parse();	
 	
 	var endTime    = new Date().getTime();
 
-	var result = "Result RegEx=" + regex.toString() + "<br/>\n";
-	result += "<pre>\n";
-	result += pattern2string( regex );
-	result += "</pre><br/>\n";
-	result += "<b>Runtime: " + (endTime - startTime) + "ms<br/>\n";
-	displayOutput( result );
+	if( displaySuccess ) {
+	    var result = "Result RegEx=" + regex.toString() + "<br/>\n";
+	    result += "<pre>\n";
+	    result += pattern2string( regex );
+	    result += "</pre><br/>\n";
+	    result += "<b>Runtime: " + (endTime - startTime) + "ms<br/>\n";
+	    displayOutput( result, false );
+	}
+	return regex;
     } catch( e ) {
 	// The exception should be a ParseException.
 	// (Runtime errors of course do not occur ^^)
 	if( e.errorMessage ) {
-	    displayOutput( "Parse Error: " + e.errorMessage + " at " + e.startOffset );
+	    displayOutput( "Parse Error: " + e.errorMessage + " at " + e.startOffset, false );
 
 	    inputElem.focus();
 	    if( inputElem.setSelectionRange )
@@ -116,10 +119,45 @@ function testRegexParser() {
 	    displayOutput( e );
 	    throw e;  // For error tracking
 	}
+	return null;
     }
 
 }
 
-function displayOutput( data ) {
-    document.getElementById( "output_div" ).innerHTML = data;
+function testRegex() {
+    
+    var regex = testRegexParser( true );  // Don't display success message
+    if( regex == null )
+	return; // Error message already displayed
+    
+    var inputMatching  = document.getElementById( "input_text_match" ).value;
+    var readerMatching = new IKRS.PushbackStringReader( inputMatching );
+    try {
+	
+	var matchResult   = regex.match( readerMatching );
+	for( var i = 0; i < matchResult.length; i++ ) {
+
+	    displayOutput( "Matching["+ i +"]: " + matchResult + "<br/>\n", 
+			   true 
+			 );
+	}
+
+    } catch( e ) {
+    
+	if( e.errorMessage) {
+	    displayOutput( "Error: " + e.errorMessage );
+	} else {
+	    displayOutput( e, true );
+	    throw e;
+	}
+
+    }
+
+}
+
+function displayOutput( data, append ) {
+    if( append )
+	document.getElementById( "output_div" ).innerHTML += data;
+    else
+	document.getElementById( "output_div" ).innerHTML = data;
 }
