@@ -1,21 +1,18 @@
 /**
  * @author Ikaros Kappler
- * @date 2014-04-10
+ * @date 2014-04-12
  * @version 1.0.0
  **/
 
 
-IKRS.RegexCharacter = function( token ) {
+IKRS.RegexSepcialCharacter = function( token ) {
 
-    IKRS.Pattern.call( this, "CHARACTER[" + token.value + "]" );
+    IKRS.Pattern.call( this, "SPECIAL[" + token.value + "]" );
 
-    /*this.characterValue = characterValue;
-    this.characterCode  = characterCode;
-    this.rawValue       = rawValue;
-    */
+
     this.token = token;
     
-    // Also add to children list
+    // Also add to children list?
     //this.children.push( token );
 };
 

@@ -11,7 +11,7 @@ IKRS.RegexParser = function( tokenizer ) {
     IKRS.Object.call( this );
     
     this.tokenizer       = tokenizer;    
-    //this.currentRegex    = null;
+    this.currentRegex    = null;
  
 };
 
@@ -24,97 +24,40 @@ IKRS.RegexParser.prototype.read = function() {
     this.tokenizer.nextToken();
 
     // Then parse the first regex.
-    //return this._read();
-    return this.regex();
+    return this._read();
 };
 
-/*
 IKRS.RegexParser.prototype._read = function() {
 
-   
-};
-*/
-
-IKRS.RegexParser.prototype.regex = function() {
-
-    var term = this.term();
-    
-    //this.tokenizer.nextToken();
-    if( this.tokenizer.currentToken != null && // !this.tokenizer.reachedEOI() && 
-	this.tokenizer.currentToken.isUnionOperator() ) {
-	this.tokenizer.nextToken();
-	var regex = this.regex();
-	return new IKRS.RegexUnion( term, regex );
-    } else {
-	return term;
-    }
-};
-
-IKRS.RegexParser.prototype.term = function() {
-    var factor = null;
-
-    while( this.tokenizer.currentToken != null && //!this.tokenizer.reachedEOI() && 
-	   !this.tokenizer.currentToken.isClosingBracketOperator() &&
-	   !this.tokenizer.currentToken.isUnionOperator() ) {
-
-	var nextFactor = this.factor();
-	// Consume '*'
-	this.tokenizer.nextToken();
-	if( factor != null )
-	    factor = new IKRS.RegexConcatenation( factor, nextFactor );
-	else
-	    factor = nextFactor;
-
-    }
-    
-    return factor;
-    
-};
-
-IKRS.RegexParser.prototype.factor = function() {
-    var base = this.base();
-
-    while( this.tokenizer.currentToken != null && //!this.tokenizer.reachedEOI() && 
-	   this.tokenizer.currentToken.isQuantifyingOperator() 
-	   ) {
-	//this.tokenizer.nextToken();
-	base = this._readQuantifyingRule( base ); //new IKRS.RegexQuantifyer( base, 0, -1 );
-	// Consume '*', '+' or '}'
-	this.tokenizer.nextToken();
+    var last = null; 
+    var next = null;
+    var result = null;
+    while( !this.tokenizer.reachedEOI() && !this.tokenizer.currentToken.isClosingBracketOperator() ) {
 	
+	//last = this.currentRegex;
+	next = this._readRegex();
+	window.alert( "last=" + last + ", next=" + next.toString() );
+	if( last != null ) { 
+	    window.alert( "Current regex: " + this.currentRegex + ", lastRegex=" + last + ", nextRegex=" + next.toString() + ", currentToken=" + this.tokenizer.currentToken )
+	    if( next != null && this.tokenizer.reachedEOI() || (  this.tokenizer.currentToken.value != ')' && !this.tokenizer.currentToken.isQuantifyingOperator()) ) // this.tokenizer.reachedEOI() &&
+		next = new IKRS.RegexConcatenation( last, next );
+	    //this.currentRegex = next;
+	    //window.alert( "Current concat: " + next + ", currentToken=" + this.tokenizer.currentToken );
+	    if( !this.tokenizer.reachedEOI() && this.tokenizer.currentToken.value == "|" ) {
+		//this.currentRegex = operandA;
+		return this._readUnion();
+	    } 
+	    //last = null;
+	} 
+
+	var last          = next;
     }
-    
-    return base;
-};
 
-IKRS.RegexParser.prototype.base = function() {
-    
-    if( this.tokenizer.currentToken.isOpeningBracketOperator() ) {
+    this.currentRegex = next;
+    return this.currentRegex; 
+}
 
-	// Consume '('
-	this.tokenizer.nextToken();
-	var regex = this.regex();
-	// Consume ')'
-	this.tokenizer.nextToken();
-	return regex;
-    } else if( this.tokenizer.currentToken.isSetStartOperator() ) {
 
-	var charSet = this._readCharacterSet( false );  // No initial negation
-	// Consume ']'
-	this.tokenizer.nextToken();
-	return charSet;
-
-    } else {
-	
-	var constant =  new IKRS.RegexCharacter( this.tokenizer.currentToken );
-	//this.tokenizer.nextToken();
-	return constant;
-
-    }
-    
-};
-
-/*
 IKRS.RegexParser.prototype._readRegex = function() {
 
     if( this.tokenizer.reachedEOI() ) 
@@ -128,10 +71,15 @@ IKRS.RegexParser.prototype._readRegex = function() {
 	operandA = new IKRS.RegexSpecialCharacter( this.tokenizer.currentToken );
 	this.currentRegex = operandA;
 	this.tokenizer.nextToken();
+	//return operandA;
+	//this.tokenizer.nextToken();
+	//this.currentToken = operandA;
 
     } else if( this.tokenizer.currentToken.isConstant ) {	
 
 	operandA = this._readConstant( true );  // Allow '-' here
+	//this.currentRegex = operandA;
+	//return operandA;
 
     } else if( this.tokenizer.currentToken.isOperator ) {
 	
@@ -166,15 +114,24 @@ IKRS.RegexParser.prototype._readRegex = function() {
 
     }
 
+    
+    // There exists exactly one binary operator: UNION
+    /*
+    if( !this.tokenizer.reachedEOI() && this.tokenizer.currentToken.value == "|" ) {
+	this.currentRegex = operandA;
+	return this._readUnion();
+    } else {    
+	return operandA;
+    }
+    */
     return operandA;
 };
-*/
 
 /**
  * Precondition: current token is '*' (or '+' or '{') and there is a predecendent
  *               regex in the buffer.
  **/
-IKRS.RegexParser.prototype._readQuantifyingRule = function( baseRegex ) {
+IKRS.RegexParser.prototype._readQuantifying = function() {
 
     //var notEmpty = (this.tokenizer.currentToken.value == "+");
     var minCount      = 0;
@@ -189,19 +146,19 @@ IKRS.RegexParser.prototype._readQuantifyingRule = function( baseRegex ) {
 
 	// Thill will consume the whole '{' ... '}' section and store all elements
 	// inside the current Regex's attribute list.
-	this.__readAttributeList( baseRegex );
+	this.__readAttributeList();
 	//hasAttributes = true;
 
 	// Check first two attributes (if present)
-	if( baseRegex.attributes.length > 0 && 
-	    IKRS.RegexToken.isInteger(baseRegex.attributes[0],true)  // negative number syntactically allowed, however
+	if( this.currentRegex.attributes.length > 0 && 
+	    IKRS.RegexToken.isInteger(this.currentRegex.attributes[0],true)  // negative number syntactically allowed, however
 	  ) {
 
-	    minCount = parseInt(baseRegex.attributes[0]);
+	    minCount = parseInt(this.currentRegex.attributes[0]);
 	    // Is the second attribute present?
-	    if( baseRegex.attributes.length > 1 ) {
-		if( IKRS.RegexToken.isInteger(baseRegex.attributes[1],true) ) {
-		    maxCount = parseInt(baseRegex.attributes[1]);
+	    if( this.currentRegex.attributes.length > 1 ) {
+		if( IKRS.RegexToken.isInteger(this.currentRegex.attributes[1],true) ) {
+		    maxCount = parseInt(this.currentRegex.attributes[1]);
 		} else {
 		    maxCount = Math.floor( Number.POSITIVE_INFINITY ); 
 		}
@@ -217,40 +174,34 @@ IKRS.RegexParser.prototype._readQuantifyingRule = function( baseRegex ) {
     }
  
     //window.alert( "minCount=" + minCount + ", maxCount=" + maxCount );
-    //var lastRegex = this.currentRegex;
+    var lastRegex = this.currentRegex; // this.stack.pop();
     var newRegex  = null;
     if( minCount == 1 && maxCount == 1 ) {
 	// Exactly one time the regex is the regex itself.
 	//  -> no actual change
-	newRegex = baseRegex; //lastRegex;
+	newRegex = lastRegex;
     } else {
 	//window.alert( "lastRegex=" + lastRegex );
-	newRegex = new IKRS.RegexQuantifyer( baseRegex, // lastRegex, 
+	newRegex = new IKRS.RegexQuantifyer( lastRegex, 
 					     minCount,  // (notEmpty ? 1 : 0),  // At least once?
 					     maxCount   // -1                   // No upper bound
 					   );
     }
     // Consume '*' operator?
-    // DON'T CONSUME OPERATOR!
-    // THE RECURSIVE CALLER WILL DO THAT
-    /*
     if( !this.tokenizer.reachedEOI() && 
 	(this.tokenizer.currentToken.isSternOperator() || this.tokenizer.currentToken.isPlusOperator()) ) 
 	this.tokenizer.nextToken(); 
-*/
 
     //window.alert( "currentToken=" + this.tokenizer.currentToken );
 
-    //this.currentRegex = newRegex;
+    this.currentRegex = newRegex;
 
 
     // Note that cascading quantifyers are practically allowed ... even
     // though it's very bad style for regular expressions.
-    /*
     if( !this.tokenizer.reachedEOI() && this.tokenizer.currentToken.isQuantifyingOperator() ) {  
 	newRegex = this._readQuantifying();	 
     }
-    */
 
     return newRegex;
 };
@@ -258,7 +209,6 @@ IKRS.RegexParser.prototype._readQuantifyingRule = function( baseRegex ) {
 /**
  * Precondition: current token is '('.
  **/
-/*
 IKRS.RegexParser.prototype._readComposite = function() {
     
     // Skip '('
@@ -287,7 +237,6 @@ IKRS.RegexParser.prototype._readComposite = function() {
     else
 	return result; 
 };
-*/
 
 /**
  * Precondition: current token is '['.
@@ -450,14 +399,12 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
 
     // Consume ']' token
     //if( !endOfSetReached )
-    // DO NOT CONSUME ']'.
-    // RECURSIVE CALLER WILL DO THAT
-    //this.tokenizer.nextToken();
+    this.tokenizer.nextToken();
 
 
 
-    //this.currentRegex = finalRegex;
-    return finalRegex; //this.currentRegex;
+    this.currentRegex = finalRegex;
+    return this.currentRegex;
 };
 
 /**
@@ -521,7 +468,7 @@ IKRS.RegexParser.prototype._readConstant = function( allowDashAsConstant ) {
  * This function is used by the readQuantifyer-function to read
  * the attributes from the { ... } pair.
  **/
-IKRS.RegexParser.prototype.__readAttributeList = function( baseRegex ) {
+IKRS.RegexParser.prototype.__readAttributeList = function() {
     
     var sb            = new IKRS.StringBuffer();
     var attributeList = [];
@@ -538,7 +485,7 @@ IKRS.RegexParser.prototype.__readAttributeList = function( baseRegex ) {
 
 	if( t0.value == ',') {
 	    // The regex trims the string ^_^
-	    baseRegex.attributes.push( sb.toString().replace(/^\s+|\s+$/g,'') );
+	    this.currentRegex.attributes.push( sb.toString().replace(/^\s+|\s+$/g,'') );
 	    sb = new IKRS.StringBuffer();
 	    awaitingValue = true;
 	} else {
@@ -551,7 +498,7 @@ IKRS.RegexParser.prototype.__readAttributeList = function( baseRegex ) {
 
     // Last attribute present?
     if( sb.length > 0 || awaitingValue )
-	baseRegex.attributes.push( sb.toString().replace(/^\s+|\s+$/g,'') );
+	this.currentRegex.attributes.push( sb.toString().replace(/^\s+|\s+$/g,'') );
 
     
 
@@ -561,8 +508,8 @@ IKRS.RegexParser.prototype.__readAttributeList = function( baseRegex ) {
     if( !this.tokenizer.currentToken.isQuantifyingEndOperator() )
 	this._throwParseException( "Could not read quantifyer/attribute list. Missing end-of-attributes '}' operator." );
 
-    // DON'T Consume '}'!
-    //this.tokenizer.nextToken();
+    // Consume '}'
+    this.tokenizer.nextToken();
 
     
     //window.alert( array2string(this.currentRegex.attributes) );

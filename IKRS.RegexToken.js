@@ -64,6 +64,10 @@ IKRS.RegexToken.prototype.isSpecialCharacter = function() {
 	   );
 };
 
+IKRS.RegexToken.prototype.isUnionOperator = function() {
+    return ( this.isOperator && this.value == '|' );
+};
+
 IKRS.RegexToken.prototype.isQuantifyingStartOperator = function() {
     return ( this.isOperator && this.value == '{' );
 };

@@ -40,7 +40,7 @@ IKRS.RegexTokenizer = function( pushbackReader ) {
     
     this.pushbackReader = pushbackReader;
     this.currentToken   = null;
-    
+    //this.firstCall      = true;
 };
 
 /**
@@ -49,6 +49,9 @@ IKRS.RegexTokenizer = function( pushbackReader ) {
  **/
 IKRS.RegexTokenizer.prototype._setCurrentToken = function( token ) {
     this.currentToken = token;
+    //this.currentToken = this.nextToken;
+    //this.nextToken    = token;
+    //return this.currentToken; // token;
     return token;
 };
 
@@ -67,6 +70,7 @@ IKRS.RegexTokenizer.prototype.reachedEOI = function() {
  **/
 IKRS.RegexTokenizer.prototype.nextToken = function() {
 
+    this.currentToken = this.nextToken;
     // Skip whitespace tokens
     do {
 	
