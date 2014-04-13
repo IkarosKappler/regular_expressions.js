@@ -17,8 +17,8 @@ IKRS.RegexConstant.prototype.match = function( reader ) {
 };
 
 IKRS.RegexConstant.prototype.toString = function() {
-    return "(" + this.charSequence + ")";
-    //return this.tokenSequence.toString();
+    //return "(" + this.charSequence + ")";
+    return this.tokenSequence.toString();
 };
 
 

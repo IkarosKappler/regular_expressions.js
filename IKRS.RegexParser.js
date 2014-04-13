@@ -1,4 +1,8 @@
 /**
+ * Inspired by
+ *   http://matt.might.net/articles/parsing-regex-with-recursive-descent/
+ * Thanks to @mattmight
+ *
  * @author Ikaros Kappler
  * @date 2014-05-09
  * @version 1.0.0
@@ -41,7 +45,8 @@ IKRS.RegexParser.prototype.regex = function() {
     
     //this.tokenizer.nextToken();
     if( this.tokenizer.currentToken != null && // !this.tokenizer.reachedEOI() && 
-	this.tokenizer.currentToken.isUnionOperator() ) {
+	this.tokenizer.currentToken.isUnionOperator() 
+      ) {
 	this.tokenizer.nextToken();
 	var regex = this.regex();
 	return new IKRS.RegexUnion( term, regex );
@@ -55,11 +60,13 @@ IKRS.RegexParser.prototype.term = function() {
 
     while( this.tokenizer.currentToken != null && //!this.tokenizer.reachedEOI() && 
 	   !this.tokenizer.currentToken.isClosingBracketOperator() &&
-	   !this.tokenizer.currentToken.isUnionOperator() ) {
+	   !this.tokenizer.currentToken.isUnionOperator() 
+	 ) {
 
+	//window.alert( "currentToken=" + this.tokenizer.currentToken );
 	var nextFactor = this.factor();
 	// Consume '*'
-	this.tokenizer.nextToken();
+	//this.tokenizer.nextToken();
 	if( factor != null )
 	    factor = new IKRS.RegexConcatenation( factor, nextFactor );
 	else
@@ -104,13 +111,67 @@ IKRS.RegexParser.prototype.base = function() {
 	this.tokenizer.nextToken();
 	return charSet;
 
-    } else {
-	
-	var constant =  new IKRS.RegexCharacter( this.tokenizer.currentToken );
-	//this.tokenizer.nextToken();
-	return constant;
+    } else if( this.tokenizer.peek() != null &&
+	       this.tokenizer.peek().isQuantifyingOperator() 
+	     ) {
 
-    }
+	var regex;
+	if( this.tokenizer.currentToken.isSpecialCharacter() )
+	    regex = new IKRS.RegexSpecialCharacter(this.tokenizer.currentToken);
+	else
+	    regex = new IKRS.RegexCharacter(this.tokenizer.currentToken);
+	
+	// Switch to quantifyer
+	this.tokenizer.nextToken();
+	return regex;
+
+    } else {
+
+	// Old Version (working, but ugly tree)
+	//var constant =  new IKRS.RegexCharacter( this.tokenizer.currentToken );
+	//this.tokenizer.nextToken();
+	//return constant;
+	
+	var charSequence = new IKRS.TokenSequence();
+	var concatRegex  = new IKRS.RegexConcatenation();
+	while( (this.tokenizer.peek() == null ||
+		!this.tokenizer.peek().isQuantifyingOperator()) &&
+	       this.tokenizer.currentToken != null &&
+	       !this.tokenizer.currentToken.isOperator 
+	     ) {
+	
+	    if( this.tokenizer.currentToken.isSpecialCharacter() ) {
+
+		if( charSequence.tokens.length == 1 )
+		    concatRegex.addRegex( new IKRS.RegexCharacter(charSequence.tokens[0]) );
+		else if( charSequence.tokens.length > 1 )
+		    concatRegex.addRegex( new IKRS.RegexConstant(charSequence) );
+		
+		charSequence = new IKRS.TokenSequence();
+		
+		concatRegex.addRegex( new IKRS.RegexSpecialCharacter(this.tokenizer.currentToken) );
+
+	    } else {
+
+		charSequence.add( this.tokenizer.currentToken );
+		
+	    }
+	    
+	    this.tokenizer.nextToken();
+	} // END while
+
+	
+	// Sequence still has characters?
+	if( charSequence.tokens.length > 0 )
+	    concatRegex.addRegex( new IKRS.RegexConstant(charSequence) );
+
+	// How many?
+	if( concatRegex.children.length == 1 )
+	    return concatRegex.children[0];
+	else
+	    return concatRegex;
+
+    } // END if [isSpecialCharacter()]
     
 };
 
@@ -182,7 +243,7 @@ IKRS.RegexParser.prototype._readQuantifyingRule = function( baseRegex ) {
     //var hasAttributes = false;
     
     if( this.tokenizer.currentToken.isSternOperator() ) {
-	maxCount = -1; // Math.floor( Number.POSITIVE_INFINITY );
+	maxCount = Number.POSITIVE_INFINITY;
     } else if( this.tokenizer.currentToken.isPlusOperator() ) {
 	minCount = 1;
     } else if( this.tokenizer.currentToken.isQuantifyingStartOperator() ) {
@@ -203,7 +264,7 @@ IKRS.RegexParser.prototype._readQuantifyingRule = function( baseRegex ) {
 		if( IKRS.RegexToken.isInteger(baseRegex.attributes[1],true) ) {
 		    maxCount = parseInt(baseRegex.attributes[1]);
 		} else {
-		    maxCount = Math.floor( Number.POSITIVE_INFINITY ); 
+		    maxCount = Number.POSITIVE_INFINITY; 
 		}
 	    } else {
 		// EXACTLY n times: maxCount == minCount

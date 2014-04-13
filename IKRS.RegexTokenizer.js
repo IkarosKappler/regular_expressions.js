@@ -40,7 +40,8 @@ IKRS.RegexTokenizer = function( pushbackReader ) {
     
     this.pushbackReader = pushbackReader;
     this.currentToken   = null;
-    //this.firstCall      = true;
+    this.peekToken      = null;  // The next token after current token
+    this.firstCall      = true;
 };
 
 /**
@@ -48,11 +49,11 @@ IKRS.RegexTokenizer = function( pushbackReader ) {
  * with one function call.
  **/
 IKRS.RegexTokenizer.prototype._setCurrentToken = function( token ) {
-    this.currentToken = token;
-    //this.currentToken = this.nextToken;
-    //this.nextToken    = token;
-    //return this.currentToken; // token;
-    return token;
+    //this.currentToken = token;
+    this.currentToken = this.peekToken;
+    this.peekToken    = token;
+    return this.currentToken; // token;
+    //return token;
 };
 
 /**
@@ -64,13 +65,22 @@ IKRS.RegexTokenizer.prototype.reachedEOI = function() {
     return (this.currentToken == null);
 };
 
+IKRS.RegexTokenizer.prototype.peek = function() {
+    return this.peekToken;
+};
+
 /**
  * Get the next token from the reader.
  * If EOI is reached the function returns null.
  **/
 IKRS.RegexTokenizer.prototype.nextToken = function() {
+    
+    if( this.firstCall ) {
+	// Init the peek token.
+	this.firstCall = false;
+	this.nextToken();
+    }
 
-    this.currentToken = this.nextToken;
     // Skip whitespace tokens
     do {
 	

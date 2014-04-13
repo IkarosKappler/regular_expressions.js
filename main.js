@@ -1,4 +1,3 @@
-
 /**
  * @author Ikaros Kappler
  * @date 2014-04-05
@@ -6,8 +5,6 @@
  **/
 
 function testPushbackStringReader() {
-    
-    //window.alert( "X" );
 
     var stringData = document.getElementById( "input_text" ).value;
     
@@ -60,8 +57,6 @@ function testPushbackStringReader() {
 
 
 function testRegexTokenizer() {
-    
-    //window.alert( "X" );
 
     var stringData = document.getElementById( "input_text" ).value;
     
@@ -85,9 +80,7 @@ function testRegexTokenizer() {
 
 function testRegexParser() {
     
-    //window.alert( "X" );
     var startTime  = new Date().getTime();
-    //window.alert("X");
 
     var inputElem  = document.getElementById( "input_text" );
     var stringData = inputElem.value;
