@@ -26,7 +26,33 @@ IKRS.RegexUnion.prototype.addChild = function( regex ) {
 */
 
 IKRS.RegexUnion.prototype.match = function( reader ) {
-    // ...
+    
+    // Fetch the current read mark from the reader.
+    var beginMark = reader.getMark();
+
+    
+    // At least one child must match
+    //  -> each mathing child belongs to the result set.
+    var result = [];
+    for( var i = 0; i < this.children.length; i++ ) {
+
+	// Reset to begin
+	reader.resetTo( beginMark );
+	var tmpResult = this.children[i].match( reader );
+
+	
+	for( var e = 0; e < tmpResult.length; e++ ) {
+
+	    if( tmpResult[e].matchStatus != IKRS.MatchResult.STATUS_COMPLETE )
+		continue; // ignore
+	    
+	    result.push( tmpResult[e] );
+
+	} // END for
+
+    } // END for
+    
+    return result;
 };
 
 IKRS.RegexUnion.prototype.toString = function() {

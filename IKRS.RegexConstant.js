@@ -14,6 +14,9 @@ IKRS.RegexConstant = function( tokenSequence ) {
 
 IKRS.RegexConstant.prototype.match = function( reader ) {
 
+    // Fetch the current read mark from the reader.
+    var beginMark = reader.getMark();
+
     // Try to read token by token from the reader
     for( var i = 0; i < this.tokenSequence.tokens.length; i++ ) {
 
@@ -22,16 +25,20 @@ IKRS.RegexConstant.prototype.match = function( reader ) {
 	
 	if( c == -1 ) {
 	    // EOI is no real character
-	    return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_INCOMPLETE,
-					   0,
-					   i
+	    return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_FAIL,
+					   //0,
+					   i,    // length
+					   beginMark,
+					   reader.getMark()
 					 )
 		   ];
 	} else if( c != token.value ) {
 	    // Token does not match
 	    return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_FAIL,
-					   0,
-					   i
+					   //0,
+					   i,    // length
+					   beginMark,
+					   reader.getMark()
 					 )
 		   ];
 	    
@@ -43,8 +50,10 @@ IKRS.RegexConstant.prototype.match = function( reader ) {
 
     // All expected characters found.
     return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_COMPLETE,
-				   0,
-				   this.tokenSequence.tokens.length
+				   //0,
+				   this.tokenSequence.tokens.length,   // matchLength
+				   beginMark,
+				   reader.getMark()
 				 )
 	   ];
     

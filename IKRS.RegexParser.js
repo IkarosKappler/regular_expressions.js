@@ -112,6 +112,13 @@ IKRS.RegexParser.prototype.base = function() {
 	this.tokenizer.nextToken();
 	return charSet;
 
+    } else if( this.tokenizer.currentToken.isSpecialCharacter() ) {
+	
+	var regexSpecial = new IKRS.RegexSpecialCharacter(this.tokenizer.currentToken);
+	// Consume special character
+	this.tokenizer.nextToken();
+	return regexSpecial;
+
     } else if( this.tokenizer.peek() != null &&
 	       this.tokenizer.peek().isQuantifyingOperator() 
 	     ) {
@@ -240,7 +247,7 @@ IKRS.RegexParser.prototype._readQuantifyingRule = function( baseRegex ) {
 
     //var notEmpty = (this.tokenizer.currentToken.value == "+");
     var minCount      = 0;
-    var maxCount      = -1;
+    var maxCount      = Number.POSITIVE_INFINITY;
     //var hasAttributes = false;
     
     if( this.tokenizer.currentToken.isSternOperator() ) {

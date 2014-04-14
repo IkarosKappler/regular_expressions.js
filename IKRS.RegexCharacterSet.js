@@ -32,15 +32,21 @@ IKRS.RegexCharacterSet.prototype.addCharacter = function( character ) {
 };
 
 IKRS.RegexCharacterSet.prototype.match = function( reader ) {
+
+    // Fetch the current read mark from the reader.
+    var beginMark = reader.getMark();
+
     // Read one character from the reader.
     var c = reader.read();
     
     // And try to match it.
     if( c == -1 ) {
 
-	return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_INCOMPLETE,
+	return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_FAIL,
+				       //0,
 				       0,
-				       0
+				       beginMark,
+				       reader.getMark()
 				     )
 	       ];
 
@@ -51,8 +57,10 @@ IKRS.RegexCharacterSet.prototype.match = function( reader ) {
 	    var token = this.characters[i];
 	    if( token.value == c ) {
 		return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_FAIL,
-					       0,  // read index 0 of input
-					       0   // 0 characters matched
+					       //0,  // read index 0 of input
+					       0,   // 0 characters matched
+					       beginMark,
+					       reader.getMark()
 					     )
 		       ];
 	    }	    	    
@@ -60,8 +68,10 @@ IKRS.RegexCharacterSet.prototype.match = function( reader ) {
 	// Loop terminated: character does not belong to negated set.
 	// -> matches
 	return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_COMPLETE,
-				       0,  // read index 0 of input
-				       1   // 1 character matching
+				       //0,  // read index 0 of input
+				       1,   // 1 character matching
+				       beginMark,
+				       reader.getMark()
 				     )
 	       ];
 
@@ -72,8 +82,10 @@ IKRS.RegexCharacterSet.prototype.match = function( reader ) {
 	    var token = this.characters[i];
 	    if( token.value == c ) {
 		return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_COMPLETE,
-					       0,  // read index 0 of input
-					       1   // 1 character matching
+					       //0,  // read index 0 of input
+					       1,   // 1 character matching
+					       beginMark,
+					       reader.getMark()
 					     )
 		       ];
 	    } 
@@ -81,8 +93,10 @@ IKRS.RegexCharacterSet.prototype.match = function( reader ) {
 	// Loop terminated: character does not belong to normal set.
 	//  -> no match at all
 	return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_FAIL,
-				       0,  // read index 0 of input
-				       0   // 0 characters matched
+				       //0,  // read index 0 of input
+				       0,   // 0 characters matched
+				       beginMark,
+				       reader.getMark()
 				     )
 	       ];
     }

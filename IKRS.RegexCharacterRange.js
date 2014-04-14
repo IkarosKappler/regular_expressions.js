@@ -23,15 +23,20 @@ IKRS.RegexCharacterRange = function( negate,
 
 IKRS.RegexCharacterRange.prototype.match = function( reader ) {
 
+    // Fetch the current read mark from the reader.
+    var beginMark = reader.getMark();
+
     // Read one character from the input
     var c     = reader.read();
     
     // EOI reached?
     if( c == -1 ) {
 
-	return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_INCOMPLETE,
-				       0,   // read index 0 if input
-				       0    // no characters matching
+	return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_FAIL,
+				       //0,   // read index 0 if input
+				       0,     // no characters matching
+				       beginMark,
+				       reader.getMark()
 				     )
 	       ];
     } else {
@@ -40,16 +45,20 @@ IKRS.RegexCharacterRange.prototype.match = function( reader ) {
 	if( !this.negate && this.startSymbol.getCharacterCode() <= cCode && cCode <= this.endSymbol.getCharacterCode() ) {
 
 	    return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_COMPLETE,
-					   0,  // read index
-					   1   // one character matching
+					   //0,  // read index
+					   1,    // one character matching
+					   beginMark,
+					   reader.getMark()
 					 )
 		   ];
 	    
 	} else {
 
 	    return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_FAIL,
-					   0,  // read index
-					   0   // no characters matching
+					   //0,  // read index
+					   0,    // no characters matching
+					   beginMark,
+					   reader.getMark()
 					 )
 		   ];
 

@@ -75,6 +75,21 @@ IKRS.RegexToken.prototype.isSpecialCharacter = function() {
 	   );
 };
 
+/**
+ * Warning: begin-of-input and negation-in-set are ambigous and context dependent!
+ **/
+IKRS.RegexToken.prototype.isBeginOfInputCharacter = function() {
+    return (!this.isEscaped && this.value == '^');
+};
+
+IKRS.RegexToken.prototype.isEndOfInputCharacter = function() {
+    return (!this.isEscaped && this.value == '$');
+};
+
+IKRS.RegexToken.prototype.isWildcardCharacter = function() {
+    return (!this.isEscaped && this.value == '.');
+};
+
 IKRS.RegexToken.prototype.isUnionOperator = function() {
     return ( this.isOperator && this.value == '|' );
 };
@@ -123,6 +138,9 @@ IKRS.RegexToken.prototype.isWhitespace = function() {
     return (this.value == " " || this.value == "\n" || this.value == "\t");
 };
 
+/**
+ * Warning: begin-of-input and negation-in-set are ambigous and context dependent!
+ **/
 IKRS.RegexToken.prototype.isExceptOperator = function() {
     return ( this.isOperator && this.value == "^" );
 };

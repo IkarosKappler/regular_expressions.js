@@ -59,6 +59,10 @@ IKRS.PushbackStringReader.prototype.reachedEOI = function() {
     return (this.position >= this.maxReadLength);
 };
 
+IKRS.PushbackStringReader.prototype.atBeginOfInput = function() {
+    return (this.position == -1)
+};
+
 /**
  * Get the current read position (relative to startOffset!).
  **/
@@ -212,6 +216,7 @@ IKRS.PushbackStringReader.prototype.unread = function( n ) {
 IKRS.PushbackStringReader.prototype.mark = function() {
     
     // Just store the settings inside n object
+    /*
     this._resetMark = {
 	position:             this.position,
 	currentCharacter:     this.currentCharacter,
@@ -219,8 +224,26 @@ IKRS.PushbackStringReader.prototype.mark = function() {
 	lineNumber:           this.lineNumber,
 	columnNumber:         this.columnNumber
     };
-    
     return this._resetMark;
+    */
+    
+    this._resetMark = this.getMark();
+    return this._resetMark;
+};
+
+/**
+ * This function creates a new read mark without storing it inside
+ * the reader. The mark() and reset() functions are not affected by
+ * this.
+ **/
+IKRS.PushbackStringReader.prototype.getMark = function() {
+    return {
+	position:             this.position,
+	currentCharacter:     this.currentCharacter,
+	currentCharacterCode: this.currentCharacterCode,
+	lineNumber:           this.lineNumber,
+	columnNumber:         this.columnNumber
+    };
 };
 
 
@@ -242,26 +265,27 @@ IKRS.PushbackStringReader.prototype.reset = function() {
  * is unchanged an the function returns false (true otherwise).
  **/
 IKRS.PushbackStringReader.prototype.resetTo = function( mark ) {
-    
+
     // Check the mark properties before applying them!
-    if( mark.position < 1 || mark.position > this.maxReadLength )
+    if( mark.position < -1 || mark.position > this.maxReadLength )
 	return false;
 
-    this.position              = this._resetMark.position;
+    this.position              = mark.position;
     
-    if( this.position == this.startOffset-1 || mark.position > this.maxReadLength ) {
+    if( this.position <= -1 || this.position >= this.maxReadLength ) {
 	this.currentCharacter     = -1;
 	this.currentCharacterCode = -1;
     } else {
 	this.currentCharacter     = this.stringData.charAt( this.startOffst + this.position );
 	this.currentCharacterCode = this.stringData.charCodeAt( this.startOffst + this.position );
     }
-    //this.currentCharacter      = this._resetMark.currentCharacter;
-    //this.currentCharacterCode  = this._resetMark.currentCharacterCode;
+    //this.currentCharacter      = this.mark.currentCharacter;
+    //this.currentCharacterCode  = this.mark.currentCharacterCode;
 
-    this.lineNumber            = this._resetMark.lineNumber;
-    this.columnNumber          = this._resetMark.columnNumber;
+    this.lineNumber            = mark.lineNumber;
+    this.columnNumber          = mark.columnNumber;
 
+    return true;
 };
 
 
@@ -270,7 +294,7 @@ IKRS.PushbackStringReader.prototype.resetTo = function( mark ) {
  * The returned value is absolute and not a proximation.
  **/
 IKRS.PushbackStringReader.prototype.available = function() {
-    return this.maxReadLength-this.position;
+    return this.maxReadLength-this.position-1; // Really -1!? ... hmmmm
 };
 
 

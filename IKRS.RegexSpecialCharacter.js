@@ -18,7 +18,66 @@ IKRS.RegexSpecialCharacter = function( token ) {
 
 
 IKRS.RegexSpecialCharacter.prototype.match = function( reader ) {
-    // ...
+    
+    var beginMark = reader.getMark();
+
+
+    if( this.token.isBeginOfInputCharacter() ) {
+	
+	var status = null;
+	if( reader.atBeginOfInput() )    status = IKRS.MatchResult.STATUS_COMPLETE;
+	else                             status = IKRS.MatchResult.STATUS_FAIL;
+	    
+	    
+	return [ new IKRS.MatchResult( status,
+				       0,      // length is 0, because BEGIN-OF-INPUT is no real consumable symbol
+				       beginMark, 
+				       beginMark
+				     ) ];
+	
+
+    } else if( this.token.isEndOfInputCharacter() ) {
+	
+	var status = null;
+	if( reader.reachedEOI() || reader.available() == 0 )  status = IKRS.MatchResult.STATUS_COMPLETE;
+	else                                                  status = IKRS.MatchResult.STATUS_FAIL;
+	
+	reader.read();
+	return [ new IKRS.MatchResult( status,
+				       1,      // length is 0 or 1? BEGIN-OF-INPUT is no real consumable symbol ...
+				       beginMark, 
+				       beginMark
+				     ) ];
+	
+
+    } else if( this.token.isWildcardCharacter() ) {
+	
+	//window.alert( "isWildCard; reader.position=" + reader.position + ", reachedEOI=" + reader.reachedEOI() + ", available=" + reader.available() );
+
+	// Is there any input available at all?	
+	if( reader.reachedEOI() || reader.available() == 0 ) {
+	    // Nothing to read
+	    //reader.read();
+	    return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_FAIL,
+					   0,      // length is 0
+					   beginMark, 
+					   reader.getMark() // beginMark
+					 ) ]; 
+	} else {
+	    // Read exactly one anonymous symbol
+	    reader.read();
+	    return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_COMPLETE,
+					   1,      // length is 1
+					   beginMark, 
+					   reader.getMark()
+					 ) ];
+	}
+	
+    } else {
+	// This must not happen!
+	// IF it happens then the parser is faulty.
+	throw "[IKRS.RegexSpecialCharacter] Runtime Error: my internal token is NOT a special character (" + token.rawValue + ").";
+    }
 };
 
 IKRS.RegexSpecialCharacter.prototype.toString = function() {
@@ -28,7 +87,6 @@ IKRS.RegexSpecialCharacter.prototype.toString = function() {
     else
 	return this.token.value;
     
-    //return "X";
 };
 
 

@@ -135,9 +135,10 @@ function testRegex() {
     try {
 	
 	var matchResult   = regex.match( readerMatching );
+	displayOutput( "" + matchResult.length + " sub result(s) found.<br/>\n", true );
 	for( var i = 0; i < matchResult.length; i++ ) {
 
-	    displayOutput( "Matching["+ i +"]: " + matchResult + "<br/>\n", 
+	    displayOutput( "Matching["+ i +"]: " + matchResult[i] + "<br/><br/>\n", 
 			   true 
 			 );
 	}
