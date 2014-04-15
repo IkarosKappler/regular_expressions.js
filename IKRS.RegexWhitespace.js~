@@ -1,18 +1,23 @@
 /**
- * This is an abstract super class for all predefined character classes.
+ * The predefined character class for whitespace (\s).
  *
- * Each subclass MUST implement the match() function!
- *
+ * Whitespace characters are:
+ *  - 0x20 (' ')   The regular space character.
+ *  - \n           Line breaks
+ *  - 0x0B         Line Feed.
+ *  - \t           Tabulator.
+ *  - \f           Form Feed.
+ *  - \r           Carrigage Return.
  *
  * @author Ikaros Kappler
- * @date 2014-04-12
+ * @date 2014-04-15
  * @version 1.0.0
  **/
 
 
-IKRS.RegexSpecialCharacter = function( token, name ) {
+IKRS.RegexSpecialCharacter = function( token ) {
 
-    IKRS.Pattern.call( this, (name == null ? "SPECIAL[" + token.rawValue + "]" : name) );
+    IKRS.Pattern.call( this, "SPECIAL[" + token.rawValue + "]" );
 
 
     this.token = token;
@@ -24,10 +29,6 @@ IKRS.RegexSpecialCharacter = function( token, name ) {
 
 IKRS.RegexSpecialCharacter.prototype.match = function( reader ) {
     
-
-    throw "[IKRS.RegexSpecialCharacter.match(...)] This class is abstract and the 'match' function must be overridden by its subclasses before it can be used.";
-
-    /*
     var beginMark = reader.getMark();
 
 
@@ -87,54 +88,15 @@ IKRS.RegexSpecialCharacter.prototype.match = function( reader ) {
 	// IF it happens then the parser is faulty.
 	throw "[IKRS.RegexSpecialCharacter] Runtime Error: my internal token is NOT a special character (" + token.rawValue + ").";
     }
-
-    */
 };
 
 IKRS.RegexSpecialCharacter.prototype.toString = function() {
     
     if( this.token.isEscaped )
-	return this.token.rawValue;    // Eventually the *real* character value is not printable
+	this.token.rawValue;    // Eventually the *real* character value is not printable
     else
 	return this.token.value;
     
-};
-
-
-/**
- * This static function is used by the parser to keep the code small.
- *
- * It decides from the passed special character token which RegEx class should be used.
- *
- *
- **/
-IKRS.RegexSpecialCharacter.createFromToken = function( token ) {
-
-    if( !token.isSpecialCharacter() )
-	throw "[IKRS.RegexSpecialCharacter.createFromToken(...){static}] Cannot create RegExp from token '" + token.rawValue + "'. It seems not to be a special character. Does your parser work correctly?";
-
-    
-    if( token.isBeginOfInputCharacter() )
-	return new IKRS.RegexBeginOfInput(token);   
-    else if( token.isEndOfInputCharacter() )
-	return new IKRS.RegexEndOfInput(token);    
-    else if( token.isWildcardCharacter() )
-	return new IKRS.RegexWildcard(token); // RegexSpecialCharacter(token);
-    else if( token.isDigitClassCharacter() ) 
-	return new IKRS.RegexDigit( token,      false );  // Don't negate the set
-    else if( token.isNonDigitClassCharacter() )
-	return new IKRS.RegexDigit( token,      true );   // Negate the set
-    else if( token.isWhitespaceClassCharacter() )
-	return new IKRS.RegexWhitespace( token, false );  // Don't negate the set
-    else if( token.isNonWhitespaceClassCharacter() )
-	return new IKRS.RegexWhitespace( token, true );   // Negate the set
-    else if( token.isWordClassCharacter() )
-	return new IKRS.RegexWord( token,       false );  // Don't negate the set
-    else if( token.isNonWordClassCharacter() )
-	return new IKRS.RegexWord( token,       true );   // Negate the set
-    else
-	throw "[IKRS.RegexSpecialCharacter.createFromToken(...){static}] Cannot create RegExp from token '" + token.rawValue + "'. It is a special character but does not match any expected case. Does your parser work correctly?";
-
 };
 
 

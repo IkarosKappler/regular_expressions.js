@@ -114,7 +114,7 @@ IKRS.RegexParser.prototype.base = function() {
 
     } else if( this.tokenizer.currentToken.isSpecialCharacter() ) {
 	
-	var regexSpecial = new IKRS.RegexSpecialCharacter(this.tokenizer.currentToken);
+	var regexSpecial = IKRS.RegexSpecialCharacter.createFromToken(this.tokenizer.currentToken); // new IKRS.RegexSpecialCharacter(this.tokenizer.currentToken);
 	// Consume special character
 	this.tokenizer.nextToken();
 	return regexSpecial;
@@ -125,7 +125,7 @@ IKRS.RegexParser.prototype.base = function() {
 
 	var regex;
 	if( this.tokenizer.currentToken.isSpecialCharacter() )
-	    regex = new IKRS.RegexSpecialCharacter(this.tokenizer.currentToken);
+	    regex = IKRS.RegexSpecialCharacter.createFromToken(this.tokenizer.currentToken); //new IKRS.RegexSpecialCharacter(this.tokenizer.currentToken);
 	else
 	    regex = new IKRS.RegexCharacter(this.tokenizer.currentToken);
 	
@@ -157,7 +157,7 @@ IKRS.RegexParser.prototype.base = function() {
 		
 		charSequence = new IKRS.TokenSequence();
 		
-		concatRegex.addRegex( new IKRS.RegexSpecialCharacter(this.tokenizer.currentToken) );
+		concatRegex.addRegex( IKRS.RegexSpecialCharacter.createFromToken(this.tokenizer.currentToken) ); //new IKRS.RegexSpecialCharacter(this.tokenizer.currentToken) );
 
 	    } else {
 

@@ -72,7 +72,10 @@ IKRS.RegexToken.prototype.isQuantifyingOperator = function() {
 IKRS.RegexToken.prototype.isSpecialCharacter = function() {
     return ( !this.isEscaped && 
 	     ( this.value == "." || this.value == "^" || this.value == "$" )
-	   );
+	   ) || 
+	(this.isEscaped &&
+	 ( this.value == "d" || this.value == "D" || this.value == "s" || this.value == "S" || this.value == "w" || this.value == "W" )
+	);
 };
 
 /**
@@ -88,6 +91,30 @@ IKRS.RegexToken.prototype.isEndOfInputCharacter = function() {
 
 IKRS.RegexToken.prototype.isWildcardCharacter = function() {
     return (!this.isEscaped && this.value == '.');
+};
+
+IKRS.RegexToken.prototype.isDigitClassCharacter = function() {
+    return (this.isEscaped && this.value == 'd');
+};
+
+IKRS.RegexToken.prototype.isNonDigitClassCharacter = function() {
+    return (this.isEscaped && this.value == 'D');
+};
+
+IKRS.RegexToken.prototype.isWhitespaceClassCharacter = function() {
+    return (this.isEscaped && this.value == 's');
+};
+
+IKRS.RegexToken.prototype.isNonWhitespaceClassCharacter = function() {
+    return (this.isEscaped && this.value == 'S');
+};
+
+IKRS.RegexToken.prototype.isWordClassCharacter = function() {
+    return (this.isEscaped && this.value == 'w');
+};
+
+IKRS.RegexToken.prototype.isNonWordClassCharacter = function() {
+    return (this.isEscaped && this.value == 'W');
 };
 
 IKRS.RegexToken.prototype.isUnionOperator = function() {
