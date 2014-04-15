@@ -3,13 +3,23 @@
  * @date 2014-04-10
  **/
 
-function loadPreset( preset ) {
+function loadPreset( preset, matchingInputExample, unmatchingInputExample ) {
 
-    if( document.getElementById("concat_presets").checked )
-	document.getElementById('input_regex').value += preset;
-    else
-	document.getElementById('input_regex').value = preset;
+    // Concat?
+    if( document.getElementById("concat_presets").checked ) {
 
+	document.getElementById('input_regex').value        += preset;
+	document.getElementById('input_text_match').value   += matchingInputExample;
+	document.getElementById('input_text_nomatch').value += unmatchingInputExample;
+
+    } else {
+
+	document.getElementById('input_regex').value        = preset;
+	document.getElementById('input_text_match').value   = matchingInputExample;
+	document.getElementById('input_text_nomatch').value = unmatchingInputExample;
+	
+    }
+    
 }
 
 function array2string( arr ) {

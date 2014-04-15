@@ -42,10 +42,17 @@ IKRS.RegexCharacterRange.prototype.match = function( reader ) {
     } else {
 	
 	var cCode = c.charCodeAt( 0 );
-	if( !this.negate && this.startSymbol.getCharacterCode() <= cCode && cCode <= this.endSymbol.getCharacterCode() ) {
+	var characterMatches = 
+	    ( this.startSymbol.getCharacterCode() <= cCode 
+	      && 
+	      cCode <= this.endSymbol.getCharacterCode()
+	    );
+
+	//window.alert( "beginCode=" + this.startSymbol.getCharacterCode() + ", code=" + cCode + ", endCode=" + this.endSymbol.getCharacterCode() + ", matches=" + characterMatches );
+
+	if( (this.negate && !characterMatches) || (!this.negate && characterMatches) ) {
 
 	    return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_COMPLETE,
-					   //0,  // read index
 					   1,    // one character matching
 					   beginMark,
 					   reader.getMark()
@@ -55,7 +62,6 @@ IKRS.RegexCharacterRange.prototype.match = function( reader ) {
 	} else {
 
 	    return [ new IKRS.MatchResult( IKRS.MatchResult.STATUS_FAIL,
-					   //0,  // read index
 					   0,    // no characters matching
 					   beginMark,
 					   reader.getMark()

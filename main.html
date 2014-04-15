@@ -4,11 +4,9 @@
 <meta charset="UTF-8" />
 <title>Javascript and Regular Expressions</title>
 
+<link rel="stylesheet" type="text/css" href="style.css" />
 <style>
-body {
-font-family: Courier New, Monospace;
-font-size:   10pt;
-}
+
 </style>
 
 <script language="Javascript" type="text/javascript" src="IKRS.js"></script>
@@ -53,6 +51,12 @@ font-size:   10pt;
 
 <h3>Regular Expression Analyzer Test </h3>
 <table border="0">
+  <colgroup>
+    <col width="500px"></col>
+    <col></col>
+    <col></col>
+    <col></col>
+  </colgroup>
   <tr>
     <td valign="top">
       <form name="regex_form">
@@ -72,29 +76,33 @@ font-size:   10pt;
     </td>
     <td valign="top">
       Examples<br/>
-      <button onclick="loadPreset('abc');">Constant</button><br/>
-      <button onclick="loadPreset('(abc)');">(Constant)</button><br/>
-      <button onclick="loadPreset('abc|XYZ');">Constant Union</button><br/>
-      <button onclick="loadPreset('abc*');">STERN(*)</button><br/>
-      <button onclick="loadPreset('ab(c)*');">CONSTANT CONSTANT STERN(*)</button><br/>
-      <button onclick="loadPreset('abc+');">STERN(+)</button><br/>
-      <button onclick="loadPreset('abc|XYZ+');">UNION or STERN(+)</button><br/>
-      <button onclick="loadPreset('(abc|XYZ)+');">UNION or STERN(+) (2)</button><br/>
-      <button onclick="loadPreset('(abc)(XYZ)');">Concat</button><br/>
-      <button onclick="loadPreset('[a-z]');">Range</button><br/>
-      <button onclick="loadPreset('[^a-z]');">Range (negated)</button><br/>
-      <button onclick="loadPreset('abcdef|[a-z]');">Constant or Range</button><br/>
-      <button onclick="loadPreset('[asdf]');">Character Set</button><br/>
-      <button onclick="loadPreset('[a-z&&[^m-k]]');">Range and negated Range</button><br/>
-      <button onclick="loadPreset('(abc|def){3}');">Quantifyer [3 times]</button><br/>
-      <button onclick="loadPreset('(abc|def){3,}');">Quantifyer [at least 3 times]</button><br/>
-      <button onclick="loadPreset('(abc|def){3,6}');">Quantifyer [at least 3 times, max 6 times]</button><br/>
+      <button class="presetButton" onclick="loadPreset('abc','abc','ab');">Constant</button><br/>
+      <button class="presetButton" onclick="loadPreset('(abc)','abc','bc');">(Constant)</button><br/>
+      <button class="presetButton" onclick="loadPreset('abc|XYZ','XYZ','abXY');">Constant Union</button><br/>
+      <button class="presetButton" onclick="loadPreset('abc*','abcabcabc','ababab');">STERN(*)</button><br/>
+      <button class="presetButton" onclick="loadPreset('ab(c)*','abccccc','Xbcccc');">CONSTANT CONSTANT STERN(*)</button><br/>
+      <button class="presetButton" onclick="loadPreset('abc+','abcabc','');">STERN(+)</button><br/>
+      <button class="presetButton" onclick="loadPreset('abc|XYZ+','XYZXYZ','abcXYZ');">UNION or STERN(+)</button><br/>
+      <button class="presetButton" onclick="loadPreset('(abc|XYZ)+','abcXYZabcabcXYZXYZ','abXYZ');">UNION or STERN(+) (2)</button><br/>
+      <button class="presetButton" onclick="loadPreset('(abc)(XYZ)','abxXYZ','XYZabc');">Concat</button><br/>
+      <button class="presetButton" onclick="loadPreset('[a-z]','b','B');">Range</button><br/>
+      <button class="presetButton" onclick="loadPreset('[^a-z]','A','a');">Range (negated)</button><br/>
+      <button class="presetButton" onclick="loadPreset('abcdef|[a-z]','a','abc');">Constant or Range</button><br/>
+      <button class="presetButton" onclick="loadPreset('[asdf]','s','b');">Character Set</button><br/>
+      <button class="presetButton" onclick="loadPreset('[a-z&&[^k-m]]','a','m');">Range and negated Range</button><br/>
+      <button class="presetButton" onclick="loadPreset('(abc|DEF){3}','abcDEFabc','abcDEF');">Quantifyer [3 times]</button><br/>
+      <button class="presetButton" onclick="loadPreset('(abc|DEF){3,}','abcDEFabcDEFabc','abcDEF');">Quantifyer [at least 3 times]</button><br/>
+      <button class="presetButton" onclick="loadPreset('(abc|DEF){3,5}','abcDEFabcDEF','abcDEFabcDEFabcDEFabc');">Quantifyer [at least 3 times, max 5 times]</button><br/>
       <input type="checkbox" id="concat_presets"> Concatenate Presets<br/>
     </td>
 
     <td valign="top">
-      Examples<br/>
-      <button onclick="loadPreset('Trademark.\\u2122.Backslash.\\\\');">Constant</button><br/>
+      Examples (2)<br/>
+      <button class="presetButton" onclick="loadPreset('Trademark_\\u2122_Backslash_\\\\','Trademark_\u2122_Backslash_\\','xyz');">Constant</button><br/>
+      <button class="presetButton" onclick="loadPreset('^aaabbbccc$','aaabbbccc','aaabbbcccD');">Begin/End-of-Input</button><br/>
+      <button class="presetButton" onclick="loadPreset('a.c','abc','ac');">Wildcard Character</button><br/>
+      <button class="presetButton" onclick="loadPreset('a.*c','aXYZc','ab');">Wildcard Character (*)</button><br/>
+      <button class="presetButton" onclick="loadPreset('a.+c','abc','ac');">Wildcard Character (+)</button><br/>
     </td>
 
     <td valign="top">
@@ -312,10 +320,6 @@ font-size:   10pt;
 
 	<tr>
 	  <th colspan="2">Predefined Character Classes</th>
-	</tr>
-	<tr>
-	  <td>.</td>
-	  <td>Any character (may or may not match line terminators)</td>
 	</tr>
 	<tr>
 	  <td>\d</td>

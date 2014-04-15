@@ -19,11 +19,6 @@ IKRS.RegexUnion = function( opt_left, opt_right ) {
 	this.children.push( opt_right );
 };
 
-/*
-IKRS.RegexUnion.prototype.addChild = function( regex ) {
-    this.children.push( regex );
-};
-*/
 
 IKRS.RegexUnion.prototype.match = function( reader ) {
     
