@@ -21,7 +21,7 @@ IKRS.RegexWord = function( token, negate ) {
 
     IKRS.RegexSpecialCharacter.call( this, 
 				     token, 
-				     (negate ? "NON-DIGIT[\\D]" : "DIGIT[\\s]") 
+				     (negate ? "NON-WORD[\\W]" : "WORD[\\w]") 
 				   );
 
 

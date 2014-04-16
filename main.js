@@ -98,6 +98,9 @@ function testRegexParser( displaySuccess ) {
 
 	if( displaySuccess ) {
 	    var result = "Result RegEx=" + regex.toString() + "<br/>\n";
+	    result += "" + parser.warnings.length + " warning(s)<br/>\n";
+	    for( var i = 0; i < parser.warnings.length; i++ )
+		result += "<div style=\"margin-left: 25px;\">#" + i + ": " + parser.warnings[i] + "</div>\n";
 	    result += "<pre>\n";
 	    result += pattern2string( regex );
 	    result += "</pre><br/>\n";

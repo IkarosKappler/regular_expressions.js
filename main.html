@@ -9,8 +9,10 @@
 
 </style>
 
+<!--
 <script language="Javascript" type="text/javascript" src="IKRS.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.Object.js"></script>
+<script language="Javascript" type="text/javascript" src="IKRS.RegexAttribute.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.Pattern.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.PushbackStringReader.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.StringBuffer.js"></script>
@@ -20,8 +22,10 @@
 <script language="Javascript" type="text/javascript" src="IKRS.TokenSequence.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.ParseException.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.MatchResult.js"></script>
+-->
 
 <!-- These classes inherit from IKRS.Pattern -->
+<!--
 <script language="Javascript" type="text/javascript" src="IKRS.RegexConstant.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexUnion.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexIntersection.js"></script>
@@ -31,14 +35,19 @@
 <script language="Javascript" type="text/javascript" src="IKRS.RegexCharacterSet.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexCharacterRange.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexSpecialCharacter.js"></script>
+-->
 
 <!-- Predefined character classes (inherit from IKRS.RegexSpecialCharacter) -->
+<!--
 <script language="Javascript" type="text/javascript" src="IKRS.RegexWhitespace.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexDigit.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexWord.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexBeginOfInput.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexEndOfInput.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexWildcard.js"></script>
+-->
+
+<script src="regular_expressions.lib.js"></script>
 
 
 <script language="Javascript" type="text/javascript" src="main.js"></script>
@@ -52,7 +61,7 @@
 <h3>Regular Expression Analyzer Test </h3>
 <table border="0">
   <colgroup>
-    <col width="500px"></col>
+    <col width="560px"></col>
     <col></col>
     <col></col>
     <col></col>
@@ -60,10 +69,10 @@
   <tr>
     <td valign="top">
       <form name="regex_form">
-	<textarea name="input_regex" id="input_regex" cols="75" rows="15">[^0-9]([_a-zA-Z]|[0-9])*</textarea><br/>
+	Regular Expression: <input type="text" name="input_regex" id="input_regex" size="45" value="([a-zA-Z]|\s)*" /><br/>
 	<div style="text-align: right;">
-	  Input A (match): <input type="text" name="input_text_match" id="input_text_match" size="45" value="Your matching input" /><br/>
-	  Input B (no match): <input type="text" name="input_text_nomatch" id="input_text_nomatch" size="45" value="Your non-matching input" /><br/>
+	  Input A (match): <input type="text" name="input_text_match" id="input_text_match" size="45" value="Your input" /><br/>
+	  Input B (no match): <input type="text" name="input_text_nomatch" id="input_text_nomatch" size="45" value="!non-matching!" /><br/>
 	</div>
 	<div style="text-align: right;"><script>document.write( VERSION_STRING );</script></div>
       </form>
@@ -84,7 +93,7 @@
       <button class="presetButton" onclick="loadPreset('abc+','abcabc','');">STERN(+)</button><br/>
       <button class="presetButton" onclick="loadPreset('abc|XYZ+','XYZXYZ','abcXYZ');">UNION or STERN(+)</button><br/>
       <button class="presetButton" onclick="loadPreset('(abc|XYZ)+','abcXYZabcabcXYZXYZ','abXYZ');">UNION or STERN(+) (2)</button><br/>
-      <button class="presetButton" onclick="loadPreset('(abc)(XYZ)','abxXYZ','XYZabc');">Concat</button><br/>
+      <button class="presetButton" onclick="loadPreset('(abc)(XYZ)','abcXYZ','XYZabc');">Concat</button><br/>
       <button class="presetButton" onclick="loadPreset('[a-z]','b','B');">Range</button><br/>
       <button class="presetButton" onclick="loadPreset('[^a-z]','A','a');">Range (negated)</button><br/>
       <button class="presetButton" onclick="loadPreset('abcdef|[a-z]','a','abc');">Constant or Range</button><br/>
