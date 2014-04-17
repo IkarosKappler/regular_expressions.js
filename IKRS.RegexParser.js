@@ -397,10 +397,11 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
 	    if( t0.isSpecialCharacter() ) // ^, $ or .
 		this._throwParseException( "Special character '" + t0.value + "' not allowed in ranges." );
 
+	    //window.alert( "Adding: " + t0 );
 
 	    var tmpChar = new IKRS.RegexCharacter( t0 ); 
 	    characters.push( t0 ); 
-	
+	    //parentUnion.children.push( tmpChar );
 	    
 	}
 
@@ -429,7 +430,7 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
 
 	}
 
-
+	//window.alert( "t0=" + t0 + ", t1=" + t1 );
 	t0 = t1;
 	i++;
 
@@ -441,7 +442,7 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
 	parentUnion.children.push( characterSet );
     }
     
-
+    
     // Empty set really not allowed?
     if( parentUnion.children.length == 0 )
 	this._throwParseException( "Empty character set not allowed." );

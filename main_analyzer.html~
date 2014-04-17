@@ -62,8 +62,6 @@
 <body>
 
 <h3>Regular Expression Analyzer Test </h3>
-Parser Test | <a href="main_analyzer.html">Analyzer Test</a><br/><br/>
-
 <table border="0">
   <colgroup>
     <col width="560px"></col>
@@ -76,12 +74,8 @@ Parser Test | <a href="main_analyzer.html">Analyzer Test</a><br/><br/>
       <form name="regex_form">
 	Regular Expression: <input type="text" name="input_regex" id="input_regex" size="45" value="([a-zA-Z]|\s)*" /><br/>
 	<div style="text-align: right;">
-	  <!--
 	  Input A (match): <input type="text" name="input_text_match" id="input_text_match" size="45" value="Your input" /><br/>
 	  Input B (no match): <input type="text" name="input_text_nomatch" id="input_text_nomatch" size="45" value="!non-matching!" /><br/>
-	  -->
-	  Input A (match): <textarea cols="30" rows="4" name="input_text_match" id="input_text_match">Your input</textarea><br/>
-	  Input B (no match): <textarea cols="30" rows="4" name="input_text_nomatch" id="input_text_nomatch">!non-matching!"</textarea><br/>
 	</div>
 	<div style="text-align: right;"><script>document.write( VERSION_STRING );</script></div>
       </form>

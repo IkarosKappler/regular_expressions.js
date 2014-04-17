@@ -180,43 +180,43 @@ IKRS.RegexTokenizer.prototype._readEscaped = function( c0 ) {
 
 	// Escaped Backslash Character
 	// value, rawValue, no operator, is constant, IS escaped!
-	return this._setCurrentToken( new IKRS.RegexToken( c1, c1, false, true, true, this.pushbackReader.position-1, this.pushbackReader.position+1 ) );  
+	return this._setCurrentToken( new IKRS.RegexToken( c1, c0+c1, false, true, true, this.pushbackReader.position-1, this.pushbackReader.position+1 ) );  
 
     } else if( c1 == 't' ) {
 	
 	// Tabulator Character
 	// value, rawValue, no operator, is constant, IS escaped!
-	return this._setCurrentToken( new IKRS.RegexToken( '\t', c1, false, true, true, this.pushbackReader.position-1, this.pushbackReader.position+1 ) );  
+	return this._setCurrentToken( new IKRS.RegexToken( '\t', c0+c1, false, true, true, this.pushbackReader.position-1, this.pushbackReader.position+1 ) );  
 
     } else if( c1 == 'n' ) {
 
 	// Line Break Character
 	// value, rawValue, no operator, is constant, IS escaped!
-	return this._setCurrentToken( new IKRS.RegexToken( '\n', c1, false, true, true, this.pushbackReader.position-1, this.pushbackReader.position+1 ) );
+	return this._setCurrentToken( new IKRS.RegexToken( '\n', c0+c1, false, true, true, this.pushbackReader.position-1, this.pushbackReader.position+1 ) );
 
     } else if( c1 == 'r' ) {
 
 	// Carriage Return Character
 	// value, rawValue, no operator, is constant, IS escaped!
-	return this._setCurrentToken( new IKRS.RegexToken( '\r', c1, false, true, true, this.pushbackReader.position-1, this.pushbackReader.position+1 ) );
+	return this._setCurrentToken( new IKRS.RegexToken( '\r', c0+c1, false, true, true, this.pushbackReader.position-1, this.pushbackReader.position+1 ) );
 
     } else if( c1 == 'f' ) {
 
 	// Form Feed Character
 	// value, rawValue, no operator, is constant, IS escaped!
-	return this._setCurrentToken( new IKRS.RegexToken( '\f', c1, false, true, true, this.pushbackReader.position-1, this.pushbackReader.position+1 ) );	
+	return this._setCurrentToken( new IKRS.RegexToken( '\f', c0+c1, false, true, true, this.pushbackReader.position-1, this.pushbackReader.position+1 ) );	
 
     } else if( c1 == 'a' ) {
 
 	// Alert Bell Character
 	// value, rawValue, no operator, is constant, IS escaped!
-	return this._setCurrentToken( new IKRS.RegexToken( '\a', c1, false, true, true, this.pushbackReader.position-1, this.pushbackReader.position+1 ) );
+	return this._setCurrentToken( new IKRS.RegexToken( '\a', c0+c1, false, true, true, this.pushbackReader.position-1, this.pushbackReader.position+1 ) );
 
     } else if( c1 == 'e' ) {
 
 	// Escape Character
 	// value, rawValue, no operator, is constant, IS escaped!
-	return this._setCurrentToken( new IKRS.RegexToken( '\e', c1, false, true, true, this.pushbackReader.position-1, this.pushbackReader.position+1 ) );
+	return this._setCurrentToken( new IKRS.RegexToken( '\e', c0+c1, false, true, true, this.pushbackReader.position-1, this.pushbackReader.position+1 ) );
 
     } else if( c1 == 'x' ) {
 

@@ -214,7 +214,9 @@ function _testTokenizeInput(  regex, regexText, inputText ) {
 	do {
 
 	    var matchResult = regex.match( reader );
-	    longestMatch    = IKRS.Analyzer._getLongestMatch( matchResult );
+	    longestMatch    = IKRS.Analyzer._getLongestMatch( matchResult, 
+							      true         // allowZeroLength
+							    );
 	    displayOutput( "[" + i +"] longestMatch=" + longestMatch + "<br/>\n", true );
 	    displayOutput( "<div style=\"margin-left: 25px; font-family: Monospace;\">" + inputText.substr(longestMatch.beginMark.position+1,longestMatch.matchLength) + "</div>\n", true );
 	    
@@ -240,6 +242,7 @@ function _testTokenizeInput(  regex, regexText, inputText ) {
     }
 
 }
+
 
 /*
 function _getLongestMatch( matchResult ) {
