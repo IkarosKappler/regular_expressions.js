@@ -18,7 +18,17 @@ IKRS.RegexParser = function( tokenizer ) {
     this.warnings        = [];
 };
 
-
+/**
+ * Start the parsing process.
+ *
+ * The input is read from the tokenizer that was passed to the 
+ * constructor.
+ *
+ * The returned object is a Regular Expression, an instance of a sub class
+ * of IKRS.Pattern.
+ *
+ * @throws IKRS.ParseException
+ **/
 IKRS.RegexParser.prototype.parse = function() {
     // Clear warnings from last run
     this.warnings        = [];
@@ -30,6 +40,11 @@ IKRS.RegexParser.prototype.parse = function() {
     return this.regex();
 };
 
+/**
+ * Reads a regex from the current position of the input.
+ *
+ * @throws IKRS.ParseException
+ **/
 IKRS.RegexParser.prototype.regex = function() {
 
     var term = this.term();
@@ -45,6 +60,12 @@ IKRS.RegexParser.prototype.regex = function() {
     }
 };
 
+
+/**
+ * Reads a term expression from the current position of the input. 
+ *
+ * @throws IKRS.ParseException
+ **/
 IKRS.RegexParser.prototype.term = function() {
 
     var factor = null;
@@ -67,6 +88,12 @@ IKRS.RegexParser.prototype.term = function() {
     
 };
 
+
+/**
+ * Reads a factor expression from the current position of the input. 
+ *
+ * @throws IKRS.ParseException
+ **/
 IKRS.RegexParser.prototype.factor = function() {
     var base = this.base();
 
@@ -83,6 +110,12 @@ IKRS.RegexParser.prototype.factor = function() {
     return base;
 };
 
+
+/**
+ * Reads a base expression from the current position of the input. 
+ *
+ * @throws IKRS.ParseException
+ **/
 IKRS.RegexParser.prototype.base = function() {
     
     if( this.tokenizer.currentToken.isOpeningBracketOperator() ) {
@@ -186,6 +219,8 @@ IKRS.RegexParser.prototype.base = function() {
 /**
  * Precondition: current token is '*' (or '+' or '{') and there is a predecendent
  *               regex in the buffer.
+ *
+ * @throws IKRS.ParseException
  **/
 IKRS.RegexParser.prototype._readQuantifyingRule = function( baseRegex ) {
 
@@ -269,6 +304,8 @@ IKRS.RegexParser.prototype._readQuantifyingRule = function( baseRegex ) {
 
 /**
  * Precondition: current token is '['.
+ *
+ * @throws IKRS.ParseException
  **/
 IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
     
@@ -433,6 +470,8 @@ IKRS.RegexParser.prototype._readCharacterSet = function( p_negate ) {
 /**
  * Precondition: current token is '|' and in this.currentRegex is the
  *               left operand.
+ *
+ * @throws IKRS.ParseException
  **/  
 IKRS.RegexParser.prototype._readUnion = function() {
 
@@ -453,6 +492,12 @@ IKRS.RegexParser.prototype._readUnion = function() {
     return union;
 };
 
+
+/**
+ * Reads a constant expression from the current position of the input.
+ *
+ * @throws IKRS.ParseException
+ **/
 IKRS.RegexParser.prototype._readConstant = function( allowDashAsConstant ) {
     
     // Append the current token.
@@ -486,6 +531,8 @@ IKRS.RegexParser.prototype._readConstant = function( allowDashAsConstant ) {
 /**
  * This function is used by the readQuantifyer-function to read
  * the attributes from the { ... } pair.
+ *
+ * @throws IKRS.ParseException
  **/
 IKRS.RegexParser.prototype.__readAttributeList = function( baseRegex ) {
     
@@ -528,6 +575,11 @@ IKRS.RegexParser.prototype.__readAttributeList = function( baseRegex ) {
 
 };
 
+/**
+ * Throws a ParseException witht the current read offsets.
+ *
+ * @throws ParseException
+ **/
 IKRS.RegexParser.prototype._throwParseException = function( errmsg ) {
     throw new IKRS.ParseException( errmsg,
 				   this.tokenizer.pushbackReader.position,

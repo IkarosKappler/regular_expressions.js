@@ -12,6 +12,7 @@
 <!--
 <script language="Javascript" type="text/javascript" src="IKRS.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.Object.js"></script>
+<script language="Javascript" type="text/javascript" src="IKRS.ArraySet.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexAttribute.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.Pattern.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.PushbackStringReader.js"></script>
@@ -22,9 +23,10 @@
 <script language="Javascript" type="text/javascript" src="IKRS.TokenSequence.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.ParseException.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.MatchResult.js"></script>
+<script language="Javascript" type="text/javascript" src="IKRS.Analyzer.js"></script>
 -->
-
 <!-- These classes inherit from IKRS.Pattern -->
+
 <!--
 <script language="Javascript" type="text/javascript" src="IKRS.RegexConstant.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexUnion.js"></script>
@@ -36,8 +38,8 @@
 <script language="Javascript" type="text/javascript" src="IKRS.RegexCharacterRange.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexSpecialCharacter.js"></script>
 -->
-
 <!-- Predefined character classes (inherit from IKRS.RegexSpecialCharacter) -->
+
 <!--
 <script language="Javascript" type="text/javascript" src="IKRS.RegexWhitespace.js"></script>
 <script language="Javascript" type="text/javascript" src="IKRS.RegexDigit.js"></script>
@@ -48,6 +50,7 @@
 -->
 
 <script src="regular_expressions.lib.js"></script>
+
 
 
 <script language="Javascript" type="text/javascript" src="main.js"></script>
@@ -80,6 +83,7 @@
       <button onclick="testRegexTokenizer();">Test RegexTokenizer</button><br/>
       <button onclick="testRegexParser(true);">Test RegexParser</button><br/>
       <button onclick="testRegex();">Test Regex</button><br/>
+      <button onclick="testTokenizeInput();">Tokenize</button><br/>
       Output:<br/>
       <div id="output_div" style="font-family: Courier New, Monospace;"></div>
     </td>

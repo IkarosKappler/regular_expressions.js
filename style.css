@@ -28,4 +28,11 @@ div.match_full {
     font-weight: bold;
 }
 
+button {
+    font-family: Courier New, Monospace;
+}
 
+input {
+    font-family: Courier New, Monospace;
+    font-size:   10pt; 
+}

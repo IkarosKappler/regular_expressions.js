@@ -58,8 +58,8 @@ function pattern2string( pattern, indent ) {
 
     var str = ""; 
     //window.alert( (typeof pattern) );
-    //if( !pattern.getName )
-//	return pattern;
+    if( !pattern.getName )
+	return pattern.toString();
     str += indent + pattern.getName() + "\n";
     if( pattern.children.length > 0 ) {
 	//str += indent + " [children]\n";

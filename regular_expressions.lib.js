@@ -8,6 +8,7 @@
 var files =  [
     "IKRS.js",
     "IKRS.Object.js",
+    "IKRS.ArraySet.js",
     "IKRS.RegexAttribute.js",
     "IKRS.Pattern.js",
     "IKRS.PushbackStringReader.js",
@@ -18,6 +19,7 @@ var files =  [
     "IKRS.TokenSequence.js",
     "IKRS.ParseException.js",
     "IKRS.MatchResult.js",
+    "IKRS.Analyzer.js",
 
 // <!-- These classes inherit from IKRS.Pattern -->
     "IKRS.RegexConstant.js",
@@ -39,10 +41,19 @@ var files =  [
     "IKRS.RegexWildcard.js"
 ];
 
-for( var i = 0; i < files.length; i++ ) {
+function dependentLoad( fileNames, index ) {
+
+    var next = index+1;
     //window.alert( "Adding " + files[i] );
     var fileref = document.createElement('script');
+    if( next < fileNames.length )
+	fileref.onload = function( e ) { dependentLoad( fileNames, next ); }; 
+
     fileref.setAttribute( "type","text/javascript" );
-    fileref.setAttribute( "src", files[i]);
+    fileref.setAttribute( "src", fileNames[index]);
     document.getElementsByTagName("head")[0].appendChild(fileref)
+
 }
+
+dependentLoad( files, 0 );
+

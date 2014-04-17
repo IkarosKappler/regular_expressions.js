@@ -43,23 +43,15 @@ IKRS.ArraySet.prototype.add = function( e ) {
 IKRS.ArraySet.prototype.addUnique = function( e ) {
     for( var i in this.elements ) {
 	if( this.comparator.equal(e, this.elements[i]) )
-	    return;
+	    return false;
     }
     this.elements.push( e );
+    return true;
 };
 
 IKRS.ArraySet.prototype.removeElementAt = function( index ) {
     delete this.elements[ index ];
 };
-
-/*
-IKRS.ArraySet.prototype.buildCleanupArray = function() {
-
-    var result = [];
-    for( var
-
-};
-*/
 
 /**
  * Locate the index of the passed element. If the element

@@ -151,6 +151,7 @@ function _testRegex( regex, regexText, inputText ) {
 	displayOutput( "Running RegEx <code>" + regexText + "</code> against input: <code>" + inputText + "</code><br/>\n", true );
 	var reader = new IKRS.PushbackStringReader( inputText );
 	var matchResult   = regex.match( reader );
+	//window.alert( regex.toString() + ", " + regex.);
 	displayOutput( "" + matchResult.length + " sub result(s) found.<br/>\n", true );
 	var longestMatch = -1;
 	for( var i = 0; i < matchResult.length; i++ ) {
@@ -181,6 +182,88 @@ function _testRegex( regex, regexText, inputText ) {
     }
 
 }
+
+
+
+function testTokenizeInput() {
+    
+    var regex = testRegexParser( true );  // Don't display success message
+    if( regex == null )
+	return; // Error message already displayed
+    
+    var inputMatching    = document.getElementById( "input_text_match" ).value;
+    var inputUnmatching  = document.getElementById( "input_text_nomatch" ).value;
+
+    var readerMatching   = new IKRS.PushbackStringReader( inputMatching );
+    var readerUnmatching = new IKRS.PushbackStringReader( inputUnmatching );
+
+    var regexText        = document.getElementById( "input_regex" ).value;
+
+    _testTokenizeInput( regex, regexText, inputMatching );
+    //_testTokenizeInput( regex, regexText, inputUnmatching );
+}
+
+function _testTokenizeInput(  regex, regexText, inputText ) {
+    try {
+	
+	displayOutput( "Running RegEx <code>" + regexText + "</code> against input: <code>" + inputText + "</code><br/>\n", true );
+
+	var reader = new IKRS.PushbackStringReader( inputText );
+	var longestMatch = null;
+	var i = 0;
+	do {
+
+	    var matchResult = regex.match( reader );
+	    longestMatch    = IKRS.Analyzer._getLongestMatch( matchResult );
+	    displayOutput( "[" + i +"] longestMatch=" + longestMatch + "<br/>\n", true );
+	    displayOutput( "<div style=\"margin-left: 25px; font-family: Monospace;\">" + inputText.substr(longestMatch.beginMark.position+1,longestMatch.matchLength) + "</div>\n", true );
+	    
+	    if( longestMatch != null )
+		reader.resetTo( longestMatch.endMark );
+
+	    i++;
+	} while( longestMatch != null && 
+		 longestMatch.matchStatus == IKRS.MatchResult.STATUS_COMPLETE && 
+		 longestMatch.matchLength > 0 
+	       );
+
+	displayOutput( "<br/><br/><br/>", true );
+
+    } catch( e ) {
+    
+	if( e.errorMessage) {
+	    displayOutput( "Error: " + e.errorMessage );
+	} else {
+	    displayOutput( e, true );
+	    throw e;
+	}
+    }
+
+}
+
+/*
+function _getLongestMatch( matchResult ) {
+    var index  = _locateLongestMatch( matchResult );
+    if( index == -1 )
+	return null;
+    else
+	return matchResult[ index ];
+}
+
+function _locateLongestMatch( matchResult ) {
+    var index  = -1;
+    var length = -1;
+    for( var i = 0; i < matchResult.length; i++ ) {
+	if( matchResult[i].matchStatus == IKRS.MatchResult.STATUS_COMPLETE && matchResult[i].matchLength > length ) {
+	    index  = i;
+	    length = matchResult[i].matchLength;
+	}
+    }
+    
+    return index;
+}
+*/
+
 
 function displayOutput( data, append ) {
     if( append )
