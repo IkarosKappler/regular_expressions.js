@@ -36,3 +36,8 @@ input {
     font-family: Courier New, Monospace;
     font-size:   10pt; 
 }
+
+div#output_div {
+    background-color: #080808;
+    color: #a8a8a8;
+}

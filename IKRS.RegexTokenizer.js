@@ -194,6 +194,18 @@ IKRS.RegexTokenizer.prototype._readEscaped = function( c0 ) {
 	// value, rawValue, no operator, is constant, IS escaped!
 	return this._setCurrentToken( new IKRS.RegexToken( '\n', c0+c1, false, true, true, this.pushbackReader.position-1, this.pushbackReader.position+1 ) );
 
+    } else if( c1 == 'b' ) {
+
+	// Line Break Character
+	// value, rawValue, no operator, is constant, IS escaped!
+	return this._setCurrentToken( new IKRS.RegexToken( '\b', c0+c1, false, true, true, this.pushbackReader.position-1, this.pushbackReader.position+1 ) );
+
+    } else if( c1 == 'f' ) {
+
+	// Line Break Character
+	// value, rawValue, no operator, is constant, IS escaped!
+	return this._setCurrentToken( new IKRS.RegexToken( '\f', c0+c1, false, true, true, this.pushbackReader.position-1, this.pushbackReader.position+1 ) );
+
     } else if( c1 == 'r' ) {
 
 	// Carriage Return Character

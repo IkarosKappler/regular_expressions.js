@@ -162,7 +162,7 @@ IKRS.RegexToken.prototype.isAndOperator = function() {
 };
 
 IKRS.RegexToken.prototype.isWhitespace = function() {
-    return (!this.isEscaped && (this.value == " " || this.value == "\n" || this.value == "\t"));
+    return (!this.isEscaped && (this.value == " " || this.value == "\n" || this.value == "\t" || this.value == '\b' || this.value == '\f'));
 };
 
 /**

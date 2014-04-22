@@ -35,9 +35,11 @@ function startAnalyzer() {
 			  { fontColor: "#00a800" }  // Any custom object. Will be passed as 'callbackParams' to the callback function
 			);
 	analyzer.addRule( "MNEMONIC", 
-			  "MV|CMP|JNE|ADD|CMP|JE|JNE|JMP|CMP|JLT|MUL|MOD|INC|DEC|SUB", 
-			  dummy.append,
-			  { fontColor: "#000000" }
+			  "MV|CMP|JNE|ADD|CMP|JE|JNE|JMP|JGT|CMP|JLT|MUL|MOD|INC|DEC|SUB|RETR|RETURN|PUSH|CALL|POP|MALLOC|MDEALLOC", 
+			  function(name,value,matchResult) { 
+			      dummy.sb.append("<span style=\"font-weight: bold;\">" + value + "</span>"); 
+			  },
+			  { fontColor: "#a8a8a8" }
 			);
 	analyzer.addRule( "NUMBER", 
 			  "\\d+",
@@ -46,8 +48,9 @@ function startAnalyzer() {
 			);
 	analyzer.addRule( "COMMENT", 
 			  "#[^\\n\\f\\b]*[\\n\\f\\b]",
+			  //function(name,value,matchResult) { window.alert(value); }, //
 			  dummy.append,
-			  { fontColor: "#680000" }
+			  { fontColor: "#880000" }
 			);
 	analyzer.addRule( "PROCECURE_START", 
 			  "PROC",
@@ -62,12 +65,12 @@ function startAnalyzer() {
 	analyzer.addRule( "LABEL",
 			  "\\w+:", 
 			  dummy.append,
-			  { fontColor: "#0000a0" }
+			  { fontColor: "#2828ff" }
 			);
 	analyzer.addRule( "JUMP_DESTINATION",
 			  "@\\w+",
 			  dummy.append, 
-			  { fontColor: "#0000a0" }
+			  { fontColor: "#2828ff" }
 			);
 	// Convert TEXT line breaks to HTML line breaks
 	analyzer.addRule( "LINE_BREAK",
