@@ -3,6 +3,10 @@
  * and is capable to split input strings into token sequences.
  * Each returned token is named by its matching regular expression.
  *
+ * The analyzer's most important function is 'nextMatch()', which tries to locate the next
+ * matching rule to perform the associated action.
+ *
+ *
  * @author  Ikaros Kappler
  * @date    2014-04-17
  * @version 1.0.0
@@ -24,6 +28,21 @@ IKRS.Analyzer = function() {
 
 
 /**
+ * Add a new rule to this analyzer.
+ *
+ * @param name   [string]         The rule's name. Can by any string.
+ * @param regex  [string|regexp]  The rule's regular expression. If the passed value is a string
+ *                                it will be parsed to a regular expression, which may result in
+ *                                a parse exception.
+ * @param action [function]       A callback function to call when the passed regex matches the input.
+ *                                The function must have this signature:
+ *                                function( name[string], 
+ *                                          value[string], 
+ *                                          matchResult[IKRS.MatchResult], 
+ *                                          callbackParams[object] 
+ *                                        );
+ * @param callbackParams [*]      Any object/value; will be passed to the callback function.
+ *
  * @throws IKRS.ParseException
  **/
 IKRS.Analyzer.prototype.addRule = function( name, regex, action, callbackParams ) {
@@ -64,7 +83,21 @@ IKRS.Analyzer.prototype._addRule = function( name, regex, action, callbackParams
     return true;
 };
 
-IKRS.Analyzer.prototype.nextMatch = function( reader, keepFirstMatch ) {
+/**
+ * The nextMatch function starts the rule based matching process and tries
+ * to find the next matching regular expression, beginning at index 0 in
+ * the rule list.
+ *
+ * There are two possible behaviors:
+ *  (a) getFirstMatch == true:  the first matching rule applies.
+ *  (b) getFirstMatch == false: the longest matching rule applies.
+ *
+ * If a matching rule was found (first or longest) the respective rule's
+ * action (callback function) is called.
+ *
+ * The found match result then is returned.
+ **/
+IKRS.Analyzer.prototype.nextMatch = function( reader, getFirstMatch ) {
     
     // Fetch reader position mark
     var beginMark           = reader.getMark();
@@ -74,7 +107,7 @@ IKRS.Analyzer.prototype.nextMatch = function( reader, keepFirstMatch ) {
     // Try token by token and detect the longest match for each.
     // Collect the longest matches.
     var longestMatchCount   = 0;
-    for( var i = 0; i < this.rules.length && (!keepFirstMatch || longestMatchCount == 0); i++ ) {
+    for( var i = 0; i < this.rules.length && (!getFirstMatch || longestMatchCount == 0); i++ ) {
 
 	// Fetch next array of results
 	reader.resetTo( beginMark );
@@ -105,23 +138,20 @@ IKRS.Analyzer.prototype.nextMatch = function( reader, keepFirstMatch ) {
 	// Re-fetch longest match
 	longestMatch = longestMatchList[ index ];
 
-	// Fetch token from reader ^^
-	reader.resetTo( beginMark );
-	var buffer = [];
-	var i      = longestMatch.matchLength;
-	var c      = -1;
-	while( i > 0 && (c = reader.read()) != -1 ) {
-	    buffer.push( c );
-	    i--;
-	}
+	// Fetch token from reader ^^	
+	var value = reader.extractFromString( longestMatch.beginMark, 
+					      longestMatch.endMark );
 	
-	this.rules[index].action( this.rules[index].name,   // rule.name
-				  buffer.join(""),          // value
+	// Set mark to as-if token was just read
+	reader.resetTo( longestMatch.endMark );
+
+	
+	this.rules[index].action( this.rules[index].name,           // rule.name
+				  value,
 				  longestMatch,
 				  this.rules[index].callbackParams
 				);
 	
-	//window.alert( "Returning: " + longestMatch );
 	return longestMatch;
 
     } else {

@@ -107,10 +107,10 @@ function startAnalyzer() {
 	displayOutput( str, true );
 	
 	
-	var KEEP_FIRST_MATCH = true;
+	var GET_FIRST_MATCH = true;  // alternative: get longest match (not wha we want here)
 	while( !reader.reachedEOI() && reader.available() > 0 ) {
 
-	    var matchResult = analyzer.nextMatch( reader, KEEP_FIRST_MATCH );
+	    var matchResult = analyzer.nextMatch( reader, GET_FIRST_MATCH );
 	    	    
 	    if( matchResult == null ) {
 		// First case: no rule could be matched.

@@ -299,6 +299,23 @@ IKRS.PushbackStringReader.prototype.available = function() {
 
 
 /**
+ * Extracts a substring from the underlying string, defined by the given begin- and 
+* end mark. 
+ *
+ * This function is used by the final Analyzer to avoid reading sub strings character-by-
+ * character, thus storing inside a stringbuffer.
+ * The built-in substr function is much faster.
+ **/  
+IKRS.PushbackStringReader.prototype.extractFromString = function( beginMark, endMark ) {
+    if( endMark.position - beginMark.position < 1 )
+	return "";
+    else
+	return this.stringData.substring( beginMark.position+1, 
+					  endMark.position+1 );
+};
+
+
+/**
  * A private function that's used to restore the correct lineNumber-
  * and columnNumber values after unread() was performed.
  **/
