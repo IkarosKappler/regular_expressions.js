@@ -13,6 +13,12 @@ IKRS.Analyzer = function() {
 
     IKRS.Object.call( this );
 
+    // The rules array contains items with the structure:
+    //  { name:           [string],
+    //    regex:          [regexp],
+    //    action:         [function(name,value,matchResult)],
+    //    callbackParams: [object]
+    //  }
     this.rules = [];
 };
 
@@ -20,18 +26,21 @@ IKRS.Analyzer = function() {
 /**
  * @throws IKRS.ParseException
  **/
-IKRS.Analyzer.prototype.addRule = function( name, regex, action ) {
+IKRS.Analyzer.prototype.addRule = function( name, regex, action, callbackParams ) {
 
     if( typeof regex == "string" ) {
 
 	var parser = new IKRS.RegexParser( new IKRS.RegexTokenizer( new IKRS.PushbackStringReader(regex) ) );
 	var regex_obj  = parser.parse();  // may throw ParseException
-	this._addRule( name, regex_obj, action );
+	//window.alert( "regex(text)=" + regex + ", regex(object)=" + regex_obj );
+	if( regex_obj == null )
+	    throw "Cannot add empty regex expressions to the analyzer's rule list.";
+	this._addRule( name, regex_obj, action, callbackParams );
 	return true;
 
     } else if( typeof regex == "object" && typeof regex.match == "function" ){
 	
-	this._addRule( name, regex, action );
+	this._addRule( name, regex, action, callbackParams );
 
     } else {
 
@@ -44,26 +53,28 @@ IKRS.Analyzer.prototype.addRule = function( name, regex, action ) {
 /**
  * Add a new name/rule pair to this analyzer.
  **/
-IKRS.Analyzer.prototype._addRule = function( name, regex, action ) {
-    
-    
-    this.rules.push( { name:   name, 
-		       regex:  regex,
-		       action: action
+IKRS.Analyzer.prototype._addRule = function( name, regex, action, callbackParams ) {
+        
+    this.rules.push( { name:           name, 
+		       regex:          regex,
+		       action:         action,
+		       callbackParams: callbackParams
 		     } 
 		   );
     return true;
 };
 
-IKRS.Analyzer.prototype.nextMatch = function( reader ) {
+IKRS.Analyzer.prototype.nextMatch = function( reader, keepFirstMatch ) {
     
     // Fetch reader position mark
-    var beginMark      = reader.getMark();
+    var beginMark           = reader.getMark();
     
-    var longestMatchList = [];
+    //var STOP_AT_FIRST_MATCH = true;
+    var longestMatchList    = [];
     // Try token by token and detect the longest match for each.
     // Collect the longest matches.
-    for( var i = 0; i < this.rules.length; i++ ) {
+    var longestMatchCount   = 0;
+    for( var i = 0; i < this.rules.length && (!keepFirstMatch || longestMatchCount == 0); i++ ) {
 
 	// Fetch next array of results
 	reader.resetTo( beginMark );
@@ -76,6 +87,8 @@ IKRS.Analyzer.prototype.nextMatch = function( reader ) {
 	// May be null
 	longestMatchList.push( longestMatch ); 
 	    
+	if( longestMatch != null )
+	    longestMatchCount++;
 
     }
     
@@ -102,8 +115,13 @@ IKRS.Analyzer.prototype.nextMatch = function( reader ) {
 	    i--;
 	}
 	
-	this.rules[index].action( this.rules[index].name, buffer.join("") );
+	this.rules[index].action( this.rules[index].name,   // rule.name
+				  buffer.join(""),          // value
+				  longestMatch,
+				  this.rules[index].callbackParams
+				);
 	
+	//window.alert( "Returning: " + longestMatch );
 	return longestMatch;
 
     } else {

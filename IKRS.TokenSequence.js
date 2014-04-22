@@ -19,7 +19,10 @@ IKRS.TokenSequence.prototype.toString = function() {
 //    return this.tokens.join("");
     var sb = new IKRS.StringBuffer();
     for( var i = 0; i < this.tokens.length; i++ ) {
-	sb.append( this.tokens[i].value );
+	if( this.tokens[i].isEscaped )
+	    sb.append( this.tokens[i].rawValue );
+	else
+	    sb.append( this.tokens[i].value );
     }
     return sb.toString();
 };
