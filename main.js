@@ -218,10 +218,14 @@ function _testTokenizeInput(  regex, regexText, inputText ) {
 							      true         // allowZeroLength
 							    );
 	    displayOutput( "[" + i +"] longestMatch=" + longestMatch + "<br/>\n", true );
-	    displayOutput( "<div style=\"margin-left: 25px; font-family: Monospace;\">" + inputText.substr(longestMatch.beginMark.position+1,longestMatch.matchLength) + "</div>\n", true );
 	    
-	    if( longestMatch != null )
+	    
+	    if( longestMatch != null ) {
+		displayOutput( "<div style=\"margin-left: 25px; font-family: Monospace;\">" + inputText.substr(longestMatch.beginMark.position+1,longestMatch.matchLength) + "</div>\n", true );
 		reader.resetTo( longestMatch.endMark );
+	    } else {
+		displayOutput( "No longest match found.\n", true );
+	    }
 
 	    i++;
 	} while( longestMatch != null && 

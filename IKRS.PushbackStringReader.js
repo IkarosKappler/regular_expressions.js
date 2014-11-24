@@ -253,7 +253,7 @@ IKRS.PushbackStringReader.prototype.getMark = function() {
  **/
 IKRS.PushbackStringReader.prototype.reset = function() {
     // Pre: this._resetMark cannot be undefined
-    this._resetTo( this._resetMark );
+    this.resetTo( this._resetMark );
 };
 
 

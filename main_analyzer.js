@@ -8,14 +8,14 @@ var dummy      = null;
 
 function startAnalyzer() {
     
-    // Clear output
+    // Clear output.
     displayOutput( "", false );
-
-    //window.alert( "X" );
     
+    // Fetch input text from the text field and create a reader object.
     var inputText  = document.getElementById("input_text").value;
     var reader     = new IKRS.PushbackStringReader( inputText );
     
+    // Make a dummy object to store matching results in (will be the syntax-highted output).
     dummy      = {
 	sb: new IKRS.StringBuffer()
     };  
@@ -61,6 +61,11 @@ function startAnalyzer() {
 			  "/PROC",
 			  dummy.append,
 			  { fontColor: "#FF6800" }
+			);
+	analyzer.addRule( "CALL_DESTINATION",
+			  "@@\\w+",
+			  dummy.append, 
+			  { fontColor: "#2888ff" }
 			);
 	analyzer.addRule( "LABEL",
 			  "\\w+:", 
@@ -111,6 +116,7 @@ function startAnalyzer() {
 	
 	
 	var GET_FIRST_MATCH = true;  // alternative: get longest match (not wha we want here)
+	var startTime       = new Date().getTime();
 	while( !reader.reachedEOI() && reader.available() > 0 ) {
 
 	    var matchResult = analyzer.nextMatch( reader, GET_FIRST_MATCH );
@@ -133,9 +139,10 @@ function startAnalyzer() {
 		
 	    }
 
-	}
-	
+	}	
 	displayOutput( dummy.sb.toString(), true );
+	var endTime = new Date().getTime();
+	displayOutput( "Runtime: " + (endTime-startTime) + "ms.<br/>\n", true );
 	
     } catch( e ) {
 	displayOutput( "Error: " + e, true );

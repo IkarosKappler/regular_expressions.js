@@ -105,7 +105,7 @@ IKRS.RegexQuantifyer.prototype.match = function( reader ) {
 	i++;
     } // END while
 
-    return uniqueResult.elements; //result;
+    return uniqueResult.elements; 
     
 };
 

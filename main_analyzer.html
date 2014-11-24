@@ -25,17 +25,17 @@
   <textarea name="input_text" id="input_text" cols="75" rows="15">
 PROC main()
      # print 'ISBN:'
-     MV [8],73   # I
-     MV [8],83   # S
-     MV [8],66   # B
-     MV [8],78   # N
-     MV [8],58   # :
+     MV [8],73                # I
+     MV [8],83                # S
+     MV [8],66                # B
+     MV [8],78                # N
+     MV [8],58                # :
 
      CALL @@readln            # read String from stdin
 
      PUSH EAX                 # push string onto stack
      CALL @@check_isbn        # call function
-     POP EDX		      # clean up stack
+     POP EDX                  # clean up stack
 
      MDEALLOC EDX             # free memory
 
