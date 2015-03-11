@@ -7,7 +7,7 @@ the default javascript capabilities.
 See the js/ikrs/IKRS.Analyzer class or the main_analyzer.html example.
 
 A demo is here 
-http://int2byte.de/asylum/regular_expressions/main_analyzer.html
+http://int2byte.de/public/asylum/regular_expressions/main_analyzer.html
 
 
 
