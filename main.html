@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <title>Javascript and Regular Expressions</title>
 
-<link rel="stylesheet" type="text/css" href="style.css" />
+<link rel="stylesheet" type="text/css" href="css/style.css" />
 <style>
 
 </style>
@@ -49,13 +49,13 @@
 <script language="Javascript" type="text/javascript" src="IKRS.RegexWildcard.js"></script>
 -->
 
-<script src="regular_expressions.lib.js"></script>
+<script src="js/regular_expressions.lib.js"></script>
 
 
 
-<script language="Javascript" type="text/javascript" src="main.js"></script>
-<script language="Javascript" type="text/javascript" src="util.js"></script>
-<script language="Javascript" type="text/javascript" src="version.js"></script>
+<script language="Javascript" type="text/javascript" src="js/main.js"></script>
+<script language="Javascript" type="text/javascript" src="js/util.js"></script>
+<script language="Javascript" type="text/javascript" src="js/version.js"></script>
 </head>
 
 
@@ -112,6 +112,7 @@ Parser Test | <a href="main_analyzer.html">Analyzer Test</a><br/><br/>
       <button class="presetButton" onclick="loadPreset('(abc|DEF){3}','abcDEFabc','abcDEF');">Quantifyer [3 times]</button><br/>
       <button class="presetButton" onclick="loadPreset('(abc|DEF){3,}','abcDEFabcDEFabc','abcDEF');">Quantifyer [at least 3 times]</button><br/>
       <button class="presetButton" onclick="loadPreset('(abc|DEF){3,5}','abcDEFabcDEF','abcDEFabcDEFabcDEFabc');">Quantifyer [at least 3 times, max 5 times]</button><br/>
+      <button class="presetButton" onclick="loadPreset('(abc)?DEF','abcDEF','abcabcDEF');">One-time Quantifyer [zero or one times 'abc']</button><br/>
       <input type="checkbox" id="concat_presets"> Concatenate Presets<br/>
     </td>
 
