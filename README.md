@@ -50,6 +50,7 @@ ESCAPECHAR := 'n' | 'b' | 'r' | 's' | 'S' | 'w' | 'W' | 'd' | 'D' | <operator_ch
 
 Examples
 ~~~~~~~~
+```
 AB		Concatenation Operator, concats A and B (has no symbol, implicit between operands).
 A|B 		Union Operator of A and B; correlates to logical OR.
 A* 		Quantifying: repetition Operator (Kleene Stern); repeat A n times where n=0 is allowed (empty expression).
@@ -60,8 +61,10 @@ A{n,m} 		Quantifying: repetition Operator (minimum and maximum); repeat A at lea
 A?		Quantifying: repitition Operator (zero or one occurences); find 0 or 1 times; equivalent to {0,1}.
 (A) 		Parenthesis: bind composite expressions together against stronger operators.
 		Operator precedence: Union < Concatenation < Quantifying Operators < Parenthesis
+```
 
 Regular Grammars: Notation
+```
 a 		The single character a
 asdf 	    	The constant character sequence asdf
 asdf|qwertz 	The constant character sequence asdf OR qwertz
@@ -71,8 +74,10 @@ asdf+ 		The sequence asdf at least one or n times.
 cat{3} 		The sequence cat three times: catcatcat
 cat{3,5} 	The sequence cat three to five times: catcatcat, catcatcatcat or catcatcatcatcat
 cat{3,} 	The sequence cat at least three times: catcatcat, catcatcatcat or catcatcatcatcat, catcatcatcatcatcat, ...
+```
 
 Escaping Characters
+```
 \\		The backslash character
 \. 		Punctuation mark (to distinct from wildcard token)
 \^ 		Circumflex (to distinct from begin-of-input token)
@@ -89,8 +94,10 @@ Escaping Characters
 \a 		The alert (bell) character ('\u0007')
 \e 		The escape character ('\u001B')
 \<operator> 	Any operator symbol escaped (use as non-operator token)
+```
 
 Special tokens
+```
 ^		Start of input.
 $ 		End of input.
 . 		Any character (wild card).
@@ -103,15 +110,17 @@ Character 	Sets and Ranges
 [a-z&&[def]] 	d, e, or f (intersection)
 [a-z&&[^bc]] 	a through z, except for b and c: [ad-z] (subtraction)
 [a-z&&[^m-p]] 	a through z, and not m through p: [a-lq-z](subtraction)
+```
 
 Predefined Character Classes
+```
 \d 	   	A digit: [0-9]
 \D 		A non-digit: [^0-9]
 \s 		A whitespace character: [\t\n\x0B\f\r]
 \S 		A non-whitespace character: [^\s]
 \w 		A word character: [a-zA-Z_0-9]
 \W 		A non-word character: [^\w]
-
+```
 
 
 
