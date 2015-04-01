@@ -1,0 +1,22 @@
+
+
+Multi-Line-Comment:
+/\*([\*][^/]|[^\*])*\*/
+
+
+/\*([\*][^/]|[^\*])*(\*/|\*\*/)
+
+/\*(\*[^/]|[^\*])*(/)
+
+Explanation:
+ - Multi-Line comments begin with 
+    /*
+ - And they end with
+    / 	  
+ - Inside may be anything that's not a star
+    *
+   - IF it is a star, it MUST not be followed by a slash
+      /
+
+
+/\*(\*([^/\*]?)|[^\*])*\*/

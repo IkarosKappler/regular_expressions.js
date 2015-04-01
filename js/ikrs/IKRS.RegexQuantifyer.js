@@ -117,9 +117,9 @@ IKRS.RegexQuantifyer.prototype.toString = function() {
 	else if( this.minCount == 1 )
 	    return "(" + this.baseRegex.toString() + "+)";
 	else
-	    return "(" + this.baseRegex.toString() + "{" + this.minCount + "})";
-    } else if( this.maxCount != this.minCount ) { //this.maxCount == Number.POSITIVE_INFINITY ) {
-	return "(" + this.baseRegex.toString() + "{" + this.minCount + ",})";
+	    return "(" + this.baseRegex.toString() + "{" + this.minCount + ",})";
+    } else if( this.maxCount == this.minCount ) { //this.maxCount != Number.POSITIVE_INFINITY ) {
+	return "(" + this.baseRegex.toString() + "{" + this.minCount + "})";
     } else {
 	return "(" + this.baseRegex.toString() + "{" + this.minCount + "," + this.maxCount + "})";
     }

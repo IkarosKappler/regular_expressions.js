@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Javascript and Regular Expressions</title>
+
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+<script src="js/regular_expressions.lib.js"></script>
+<script src="js/main_extended.js"></script>
+
+<!--
+<script language="Javascript" type="text/javascript" src="main.js"></script>
+<script language="Javascript" type="text/javascript" src="util.js"></script>
+-->
+<script language="Javascript" type="text/javascript" src="js/version.js"></script>
+</head>
+
+
+<body>
+
+<h3>ExtendedTest</h3>
+<a href="main.html">Parser Test</a> | <a href="main_analyzer.html">Analyzer Test</a> | Extended Test (TESTING)<br/><br/>
+
+This is something like a JavaScript analyzer.<br/>
+Your Input:
+<form name="analyzer_form">
+  <textarea name="input_text" id="input_text" cols="95" rows="15">
+/**
+ * The RegEx class for END-OF-INPUT (EOI) which is no actual symbol from the input but more
+ * the complementary part of BEGIN-OF-INPUT.
+ *
+ * Its super class is IKRS.RegexSpecialCharacter.
+ *
+ *
+ * @author Ikaros Kappler
+ * @date 2014-04-15
+ * @version 1.0.0
+ **/
+
+
+// Well, the constructor.
+IKRS.RegexEndOfInput = function( token ) {
+
+    IKRS.RegexSpecialCharacter.call( this, 
+				     token, 
+				     "END-OF-INPUT[^]" 
+				   );
+
+    
+};
+
+
+/**
+ * @override
+ **/
+IKRS.RegexEndOfInput.prototype.match = function( reader ) {
+    
+    // Fetch current read mark.
+    var beginMark = reader.getMark();
+
+
+    var status = null;
+    if( reader.reachedEOI() || reader.available() == 0 )  status = IKRS.MatchResult.STATUS_COMPLETE;
+    else                                                  status = IKRS.MatchResult.STATUS_FAIL;
+    
+    //reader.read();
+    return [ new IKRS.MatchResult( status,
+				   0,      // length is 0 or 1? END-OF-INPUT is no real consumable symbol ...
+				   beginMark, 
+				   beginMark
+				 ) ];
+    
+
+};
+
+
+IKRS.RegexEndOfInput.prototype.constructor     = IKRS.RegexEndOfInput;
+
+IKRS.RegexEndOfInput.prototype.getName         = IKRS.RegexSpecialCharacter.prototype.getName;
+IKRS.RegexEndOfInput.prototype.getValue        = IKRS.RegexSpecialCharacter.prototype.getValue
+IKRS.RegexEndOfInput.prototype.getChildren     = IKRS.RegexSpecialCharacter.prototype.getChildren;
+IKRS.RegexEndOfInput.prototype.getAttributes   = IKRS.RegexSpecialCharacter.prototype.getAttributes;
+IKRS.RegexEndOfInput.prototype.toString        = IKRS.RegexSpecialCharacter.prototype.toString;
+
+  </textarea>
+</form>
+<button onclick="startAnalyzer();">Analyze</button><br/>
+<br/>
+
+Output:<br/>
+<div id="output_div"></div>
+
+</body>
+</html>

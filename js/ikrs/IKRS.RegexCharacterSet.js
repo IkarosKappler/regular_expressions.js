@@ -127,7 +127,7 @@ IKRS.RegexCharacterSet.prototype.getName = function() {
 
     for( var i = 0; i < this.characters.length; i++ ) {
 	if( i > 0 )
-	    str += " | ";
+	    str += " ";
 	if( this.characters[i].isEscaped )
 	    str += this.characters[i].rawValue;
 	else
