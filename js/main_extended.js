@@ -87,12 +87,12 @@ function startAnalyzer() {
 			  { fontColor: "#880000" }
 			);
 	analyzer.addRule( "STRING_typeA",  // A string enclosed in double quotes
-			  '"([^\\"]|\\")*"', 
+			  '"([^"]|\\\\")*"', 
 			  dummy.append,
 			  { fontColor: "#00a800" }
 			);
 	analyzer.addRule( "STRING_typeB",  // A string enclosed in single quotes
-			  "'([^\\']|\\')*'", 
+			  "'([^']|\\\\')*'", 
 			  dummy.append,
 			  { fontColor: "#00a800" }
 			);
