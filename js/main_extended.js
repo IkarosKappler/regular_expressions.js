@@ -110,6 +110,17 @@ function startAnalyzer() {
 			  { fontColor: "#880088" }
 			);
 
+	analyzer.addRule( "IDENTIFIER",  // Identifyers start with a character, underscore '_' or dollar '$'.
+			                 // Subsequent characters may be letters, digits, underscores, or dollar signs.
+			  "(\\w|_|\\$)(\\w|\\d|_|\\$)*",
+			  function(name,value,matchResult) { 
+			      console.debug( "IDENTIFYER: " + value );
+			      dummy.append(name,value,matchResult,{ fontColor : "#ffffff" });
+			  },
+			  { } //fontColor : "#00ff00" }
+			);
+			  
+
 	// Finally add a 'terminator' rule that matches everything.
 	// This is not necessarily required but a more elegant solution than
 	// handling no-match events manually.	
