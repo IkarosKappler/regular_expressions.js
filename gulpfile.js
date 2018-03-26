@@ -1,15 +1,13 @@
-/**
- * @author Ikaros Kappler
- * @date 2014-04-16
- * @version 1.0.0
- *
- * This version is not IE safe!
- *
- * @DEPRECATED Use dist/regular_expressions.min.js instead!
- **/
 
+var gulp = require('gulp');
+var concat = require('gulp-concat');
+var rename = require('gulp-rename');
+var uglify = require('gulp-uglify');
+var runSequence = require('run-sequence');
+var del = require('del');
 
-var files =  [
+//script paths
+var jsFiles = [
     "js/ikrs/IKRS.js",
     "js/ikrs/IKRS.Object.js",
     "js/ikrs/IKRS.ArraySet.js",
@@ -25,7 +23,7 @@ var files =  [
     "js/ikrs/IKRS.MatchResult.js",
     "js/ikrs/IKRS.Analyzer.js",
 
-// <!-- These classes inherit from IKRS.Pattern -->
+    // <!-- These classes inherit from IKRS.Pattern -->
     "js/ikrs/IKRS.RegexConstant.js",
     "js/ikrs/IKRS.RegexUnion.js",
     "js/ikrs/IKRS.RegexIntersection.js",
@@ -36,28 +34,39 @@ var files =  [
     "js/ikrs/IKRS.RegexCharacterRange.js",
     "js/ikrs/IKRS.RegexSpecialCharacter.js",
 
-// <!-- Predefined character classes (inherit from IKRS.RegexSpecialCharacter) -->
+    // <!-- Predefined character classes (inherit from IKRS.RegexSpecialCharacter) -->
     "js/ikrs/IKRS.RegexWhitespace.js",
     "js/ikrs/IKRS.RegexDigit.js",
     "js/ikrs/IKRS.RegexWord.js",
     "js/ikrs/IKRS.RegexBeginOfInput.js",
     "js/ikrs/IKRS.RegexEndOfInput.js",
     "js/ikrs/IKRS.RegexWildcard.js"
-];
+    ],
+    jsDest = './dist/',
+    concatFilename = 'regular_expressions.js';
 
-function dependentLoad( fileNames, index ) {
+gulp.task('clean', function() {
+    return Promise.all([
+        del('regular_expressions.js'),
+        del('regular_expressions.min.js')
+    ]);
+});
 
-    var next = index+1;
-    //window.alert( "Adding " + files[i] );
-    var fileref = document.createElement('script');
-    if( next < fileNames.length )
-	fileref.onload = function( e ) { dependentLoad( fileNames, next ); }; 
+gulp.task('concat', function() {
+    return gulp.src(jsFiles)
+        .pipe(concat(concatFilename))
+        .pipe(gulp.dest(jsDest));
+});
 
-    fileref.setAttribute( "type","text/javascript" );
-    fileref.setAttribute( "src", fileNames[index]);
-    document.getElementsByTagName("head")[0].appendChild(fileref)
+gulp.task('uglify', function() {
+    return gulp.src(jsDest+concatFilename)
+	.pipe(uglify())
+	.pipe(rename({suffix: '.min'}))
+	.pipe(gulp.dest(jsDest));
+});
 
-}
+gulp.task('default', function() {
+    return runSequence( 'clean', 'concat', 'uglify' ); 
+});
 
-dependentLoad( files, 0 );
 

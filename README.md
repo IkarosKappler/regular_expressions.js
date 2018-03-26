@@ -1,18 +1,20 @@
 regular_expressions.js
 ======================
 
-A regular expression parser and customizable analyzer builder beyond 
+A configurable regular expression parser and customizable analyzer builder beyond 
 the default javascript capabilities.
 
 See the js/ikrs/IKRS.Analyzer class or the main_analyzer.html example.
 
-A demo is here 
-http://int2byte.de/public/asylum/regular_expressions/main_analyzer.html
+A live [demo is here](http://int2byte.de/public/asylum/regular_expressions/main_analyzer.html)
 
 
+*Note:* Since version 1.0.0 the file js/regular_expressions.lib.js is deprecated.
+Use dist/regular_expression.min.js
 
-Regular expression grammar
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+## Regular expression grammar
+```
 REGEX := '(' REGEX ')' |
       	 '^' REGEX |
          CHARACTERSET |
@@ -45,11 +47,95 @@ ATOM := ANYCHARACTER |
 	$            %% end of input
 
 ESCAPECHAR := 'n' | 'b' | 'r' | 's' | 'S' | 'w' | 'W' | 'd' | 'D' | <operator_char>
+```
+
+## What it looks like
+
+This is what the example and test page looks like.
+![Main page](Screenshot_2018-03-26_overview.png "Main page")
 
 
 
-Examples
-~~~~~~~~
+## Build a simple lexicographical analyzer
+Example script (Javascript), define the rule set (what your tokens look like):
+```javascript
+    var analyzer = new IKRS.Analyzer();
+    try {
+
+	analyzer.addRule( "REGISTER",               // Any name for this rule. Duplicates allowed.
+			  "EAX|EBX|ECX|EDX|IP",     // The regular expression to be matched.
+			  dummy.append,             // The callback function to call on input match.
+			  { fontColor: "#00a800" }  // Any custom object. Will be passed as 'callbackParams' to the callback function
+			);
+	analyzer.addRule( "MNEMONIC", 
+			  "MV|CMP|JNE|ADD|CMP|JE|JNE|JMP|JGT|CMP|JLT|MUL|MOD|INC|DEC|SUB|RETR|RETURN|PUSH|CALL|POP|MALLOC|MDEALLOC", 
+			  function(name,value,matchResult) { 
+			      dummy.sb.append("<span style=\"font-weight: bold;\">" + value + "</span>"); 
+			  },
+			  { fontColor: "#a8a8a8" }
+			);
+	analyzer.addRule( "NUMBER", 
+			  "\\d+",
+			  dummy.append,
+			  { fontColor: "#8800a8" }
+			);
+	analyzer.addRule( "TERMINATOR",
+			  ".",
+			  function(name,value,matchResult) { 
+			      dummy.sb.append(value); 
+			  }, 
+			  { fontColor: "#880088" }
+			);
+   }
+```
+
+And this is the way to use your analzer:
+
+```javascript
+	var GET_FIRST_MATCH = true;  // alternative: get longest match (not wha we want here)
+	var startTime       = new Date().getTime();
+	while( !reader.reachedEOI() && reader.available() > 0 ) {
+
+	    var matchResult = analyzer.nextMatch( reader, GET_FIRST_MATCH );
+	    	    
+	    if( matchResult == null ) {
+		// First case: no rule could be matched.
+		// Consume current token
+		var c = reader.read();
+		console.log( "_anonymous_:" + c + "<br/>\n" );
+
+	    } else if( matchResult.matchLength == 0 ) {
+		// Second case: found match has zero length
+		// Consume one token
+		var c = reader.read();
+		console.log( "_anonymous_:" + c + "<br/>\n" );
+		
+	    } else {
+		// Last case: found match has length > 0
+		// Action was already triggered ^^
+		
+	    }
+
+	}	
+```
+
+
+The example input 'MV EAX,54' will be tokenized into
+ * MV
+ * <space>
+ * EAX
+ * ,
+ * 54
+
+See a small working example for
+ * [Assembler](https://www.int2byte.de/public/asylum/regular_expressions/main_analyzer.html Assembler)
+ * [Javascript](https://www.int2byte.de/public/asylum/regular_expressions/main_extended.html Javascript)
+
+
+
+
+### Examples for regular expressions
+
 ```
 AB		Concatenation Operator, concats A and B (has no symbol, implicit between operands).
 A|B 		Union Operator of A and B; correlates to logical OR.
@@ -63,7 +149,7 @@ A?		Quantifying: repitition Operator (zero or one occurences); find 0 or 1 times
 		Operator precedence: Union < Concatenation < Quantifying Operators < Parenthesis
 ```
 
-Regular Grammars: Notation
+### Regular Grammars: Notation
 ```
 a 		The single character a
 asdf 	    	The constant character sequence asdf

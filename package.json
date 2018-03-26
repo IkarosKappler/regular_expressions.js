@@ -1,0 +1,38 @@
+{
+  "name": "regular_expressions",
+  "version": "1.0.0",
+  "description": "A configurable regular expressions analyzer and configurable parser.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IkarosKappler/regular_expressions.js.git"
+  },
+  "keywords": [
+    "regular",
+    "expression",
+    "expressions",
+    "analyzer",
+    "javascript",
+    "tokenizer",
+    "parser",
+    "configurable"
+  ],
+  "author": "Ikaros Kappler",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/IkarosKappler/regular_expressions.js/issues"
+  },
+  "homepage": "https://github.com/IkarosKappler/regular_expressions.js#readme",
+  "dependencies": {
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-cli": "^2.0.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^3.0.0",
+    "run-sequence": "^2.2.1"
+  }
+}

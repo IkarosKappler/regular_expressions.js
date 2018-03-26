@@ -1,5 +1,9 @@
 #!/bin/bash
 #
+# THIS IS DEPRECATED. USE GULP INSTEAD:
+#  $ npm install gulp
+#  $ gulp
+#
 # This script 'compiles' the javascript files and packs them into one single file.
 #
 #
