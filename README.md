@@ -64,27 +64,20 @@ Example script (Javascript), define the rule set (what your tokens look like):
 
 	analyzer.addRule( "REGISTER",               // Any name for this rule. Duplicates allowed.
 			  "EAX|EBX|ECX|EDX|IP",     // The regular expression to be matched.
-			  dummy.append,             // The callback function to call on input match.
+			  console.log,              // The callback function to call on input match.
 			  { fontColor: "#00a800" }  // Any custom object. Will be passed as 'callbackParams' to the callback function
 			);
 	analyzer.addRule( "MNEMONIC", 
 			  "MV|CMP|JNE|ADD|CMP|JE|JNE|JMP|JGT|CMP|JLT|MUL|MOD|INC|DEC|SUB|RETR|RETURN|PUSH|CALL|POP|MALLOC|MDEALLOC", 
 			  function(name,value,matchResult) { 
-			      dummy.sb.append("<span style=\"font-weight: bold;\">" + value + "</span>"); 
+			      console.log("<span style=\"font-weight: bold;\">" + value + "</span>"); 
 			  },
 			  { fontColor: "#a8a8a8" }
 			);
 	analyzer.addRule( "NUMBER", 
 			  "\\d+",
-			  dummy.append,
+			  console.log,
 			  { fontColor: "#8800a8" }
-			);
-	analyzer.addRule( "TERMINATOR",
-			  ".",
-			  function(name,value,matchResult) { 
-			      dummy.sb.append(value); 
-			  }, 
-			  { fontColor: "#880088" }
 			);
    }
 ```
