@@ -121,8 +121,8 @@ The example input 'MV EAX,54' will be tokenized into
  * 54
 
 See a small working example for
- * [Assembler](https://www.int2byte.de/public/asylum/regular_expressions/main_analyzer.html Assembler)
- * [Javascript](https://www.int2byte.de/public/asylum/regular_expressions/main_extended.html Javascript)
+ * (Assembler)[https://www.int2byte.de/public/asylum/regular_expressions/main_analyzer.html Assembler]
+ * (Javascript)[https://www.int2byte.de/public/asylum/regular_expressions/main_extended.html Javascript]
 
 
 
